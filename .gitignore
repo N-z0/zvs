@@ -1,5 +1,10 @@
-#### .gitignore generic
+#### .gitignore program
 
 ### ignore Dolphin directory file
 .directory
+
+### Python byte-compiled optimized cache files
+__pycache__/
+*.py[cod]
+*$py.class
 
