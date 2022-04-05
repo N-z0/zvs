@@ -1,0 +1,7 @@
+#name	#vertex_shader	#fragment_shader	#comment
+hud	hud	hud	for the draw of icons on the overlays
+test	test	test	display vertex faces in white color without any matrix transformation
+simple	simple	simple	display 3d faces without any texture
+complex	complex	complex	display 3d textured faces(without normal map)
+bump1	bump1	bump1	normal map calculation are mostly made with tangent_space in vertex shader
+bump2	bump2	bump2	normal map calculation are made with tangent_space in fragment shader

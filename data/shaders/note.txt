@@ -1,0 +1,13 @@
+The shader pipeline behaves as follows:
+	Vertex Shaders -> Geometry Shaders -> (Rasterizing Engine) -> Fragment Shaders.
+
+
+The vertex shader runs considerably less often than the fragment shader.
+Because is executed once for every vertex (which are the corner points of polygons).
+It's used to modify or add new information to those vertices.
+
+
+- Model Space (all vertices defined relatively to the center of the model)
+- World Space (all vertices defined relatively to the center of the world).
+- Camera/View Space (all vertices defined relatively to the camera).
+- Homogeneous Space (all vertices defined in a small cube. Everything inside the cube is onscreen)
