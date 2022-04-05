@@ -1,0 +1,81 @@
+loading shader: {}
+loading vertex shader failed: {}, {}
+loading fragment shader failed: {}, {}
+shader combo failed: {}
+
+
+loading audio resource: {}
+loading bitmap resource: {}
+loading sound resource: {}
+loading emissive texture resource: {}
+loading ao texture resource: {}
+loading albedo texture resource: {}
+loading smoothness texture resource: {}
+loading metallic texture resource: {}
+loading normal texture resource: {}
+loading mesh resource: {}:{}
+loading materials resource: {}
+
+
+added overlay: {}
+modified overlay: {}
+deleted overlay: {}
+selected overlay: {}
+
+added icon in overlay: {}
+modified icon in overlay: {}
+deleted icon in overlay: {}
+
+added sprite icon in overlay: {}
+modified sprite icon in overlay: {}
+deleted sprite icon in overlay: {}
+
+added signal icon in overlay: {}
+modified signal icon in overlay: {}
+deleted signal icon in overlay: {}
+
+
+added scene: {}
+modified scene: {}
+deleted scene: {}
+selected scene: {}
+
+added item in scene: {}
+modified item in scene: {}
+deleted item in scene: {}
+
+added model item in scene: {}
+modified model item in scene: {}
+deleted model item in scene: {}
+
+added noise item in scene: {}
+modified noise item in scene: {}
+deleted noise item in scene: {}
+
+added light in scene: {}
+modified light in scene: {}
+deleted light in scene: {}
+
+added eye in scene: {}
+modified eye in scene: {}
+deleted eye in scene: {}
+
+added ear in scene: {}
+modified ear in scene: {}
+deleted ear in scene: {}
+
+resize scene: {}
+resize overlay: {}
+display scene
+display overlay
+clear scene: {}
+clear overlay: {}
+
+
+items calculation
+rendering items sound
+rendering items draw
+
+icons calculation
+rendering icons sound
+rendering icons draw
