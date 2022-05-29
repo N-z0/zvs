@@ -7,7 +7,7 @@
 
 __doc__ = "module containing Icons class"#information describing the purpose of this module
 __status__ = "Development"#should be one of 'Prototype' 'Development' 'Production' 'Deprecated' 'Release'
-__version__ = "2.0.0"# version number,date or about last modification made compared to the previous version
+__version__ = "2.0.1"# version number,date or about last modification made compared to the previous version
 __license__ = "public domain"# ref to an official existing License
 #__copyright__ = "Copyright 2000, The X Project"
 __date__ = "2022-04-01"#started creation date / year month day
@@ -159,7 +159,7 @@ class Icon:
 		"""draw 2d graphic and ask children to do the same"""
 		if self.active :
 			if self.sprite is not None :
-				self.sprite.draw(shader,self.abs_mod_mat)
+				self.sprite.render_draw(shader,self.abs_mod_mat)
 			for child in self.children.values() :
 				child.render_sprite(shader)
 	
@@ -182,7 +182,7 @@ class Icon:
 		"""play audio signal and ask children to do the same"""
 		if self.active :
 			if self.signal is not None :
-				self.signal.play()
+				self.signal.render_audio()
 			for child in self.children.values() :
 				child.render_signal()
 	

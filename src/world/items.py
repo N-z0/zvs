@@ -7,7 +7,7 @@
 
 __doc__ = "module containing Items class"#information describing the purpose of this module
 __status__ = "Development"#should be one of 'Prototype' 'Development' 'Production' 'Deprecated' 'Release'
-__version__ = "1.0.0"# version number,date or about last modification made compared to the previous version
+__version__ = "1.0.1"# version number,date or about last modification made compared to the previous version
 __license__ = "public domain"# ref to an official existing License
 #__copyright__ = "Copyright 2000, The X Project"
 __date__ = "2022-04-01"#started creation date / year month day
@@ -184,7 +184,7 @@ class Item:
 		"""play 3d sound and ask children to do the same"""
 		if self.active :
 			if self.noise is not None :
-				self.noise.render_sound(self.abs_mod_mat)
+				self.noise.render_audio(self.abs_mod_mat)
 			for child in self.children.values() :
 				child.render_sound()
 

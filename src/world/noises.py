@@ -7,7 +7,7 @@
 
 __doc__ = "module for the noises class"#information describing the purpose of this module
 __status__ = "Development"#should be one of 'Prototype' 'Development' 'Production' 'Deprecated' 'Release'
-__version__ = "2.0.0"# version number,date or about last modification made compared to the previous version
+__version__ = "3.0.0"# version number,date or about last modification made compared to the previous version
 __license__ = "public domain"# ref to an official existing License
 #__copyright__ = "Copyright 2000, The X Project"
 __date__ = "2022-04-01"#started creation date / year month day
@@ -63,7 +63,7 @@ class Noise :
 		self.old_position=None
 	
 	
-	def render_sound(self,model_matrix):
+	def render_audio(self,model_matrix):
 		"""make heard the 3d sounds in the virtual world"""
 		
 		new_position= model_matrix.dot( self.position_vector )
