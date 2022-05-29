@@ -7,7 +7,7 @@
 
 __doc__ = "interface module for managing the virtual world"#information describing the purpose of this module
 __status__ = "Development"#should be one of 'Prototype' 'Development' 'Production' 'Deprecated' 'Release'
-__version__ = "1.0.0"# version number,date or about last modification made compared to the previous version
+__version__ = "2.0.0"# version number,date or about last modification made compared to the previous version
 __license__ = "public domain"# ref to an official existing License
 #__copyright__ = "Copyright 2000, The X Project"
 __date__ = "2022-04-01"#started creation date / year month day
@@ -340,25 +340,25 @@ class Interface:
 		logger.log_debug(31,[overlay_name],context=self.name)
 		
 	
-	def add_overlay_icon_signal(self,overlay_name,index_list,audio_index,volume=1,repeat=0):
+	def add_overlay_icon_signal(self,overlay_name,index_list,audio_index,volume=1,pitch=1,loop=False):
 		"""
 		append  an audio signal for the specified icon in the specified overlay
 		volume is the gain of sound (must be between 0 and 1 )
 		repeat is the number of time that the sound will be play (-1 infinite)
 		"""
 		audio=self.audios_lib[audio_index]
-		signal= signals.Signal(audio,volume,repeat)
+		signal= signals.Signal(audio,volume,pitch,loop)
 		self.overlays[overlay_name].add_icon_signal(index_list,signal)
 		logger.log_debug(33,[overlay_name],context=self.name)
 		
-	def set_overlay_icon_signal(self,overlay_name,index_list,volume=None,repeat=None):
+	def set_overlay_icon_signal(self,overlay_name,index_list,volume=None,pitch=None,playout=None):
 		"""
 		change audio signal parameters for the specified icon in the specified overlay
 		not given parameters are ignored and will produce no changes
 		volume is the gain of sound (must be between 0 and 1 )
 		repeat is the number of time that the sound will be play (-1 infinite)
 		"""
-		self.overlays[overlay_name].set_icon_signal(index_list,volume,repeat)
+		self.overlays[overlay_name].set_icon_signal(index_list,volume,pitch,playout)
 		logger.log_debug(34,[overlay_name],context=self.name)
 	
 	def del_overlay_icon_signal(self,overlay_name,index_list):

@@ -7,7 +7,7 @@
 
 __doc__ = "module containing Icons class"#information describing the purpose of this module
 __status__ = "Development"#should be one of 'Prototype' 'Development' 'Production' 'Deprecated' 'Release'
-__version__ = "1.0.0"# version number,date or about last modification made compared to the previous version
+__version__ = "2.0.0"# version number,date or about last modification made compared to the previous version
 __license__ = "public domain"# ref to an official existing License
 #__copyright__ = "Copyright 2000, The X Project"
 __date__ = "2022-04-01"#started creation date / year month day
@@ -168,11 +168,12 @@ class Icon:
 		"""assign audio signal"""
 		self.signal=signal
 	
-	def set_signal(self,volume,repeat):
+	def set_signal(self,volume,pitch,playout):
 		"""modify audio signal"""
 		self.signal.set_volume(volume)
-		self.signal.set_repeat(repeat)
-		
+		self.signal.set_pitch(pitch)
+		self.signal.set_playout(playout)
+	
 	def del_signal(self):
 		"""delete audio signal"""
 		self.signal= None

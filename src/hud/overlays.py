@@ -7,7 +7,7 @@
 
 __doc__ = "module containing Overlay class"#information describing the purpose of this module
 __status__ = "Development"#should be one of 'Prototype' 'Development' 'Production' 'Deprecated' 'Release'
-__version__ = "1.0.0"# version number,date or about last modification made compared to the previous version
+__version__ = "2.0.0"# version number,date or about last modification made compared to the previous version
 __license__ = "public domain"# ref to an official existing License
 #__copyright__ = "Copyright 2000, The X Project"
 __date__ = "2022-04-01"#started creation date / year month day
@@ -201,10 +201,10 @@ class Overlay(icons.Icon) :
 		child= self.get_child(index_list)
 		child.add_signal(noise)
 
-	def set_icon_signal(self,index_list,volume,repeat):
+	def set_icon_signal(self,index_list,volume,pitch,playout):
 		"""change an audio sound for specified icon"""
 		child= self.get_child(index_list)
-		child.set_signal(volume,repeat)
+		child.set_signal(volume,pitch,playout)
 	
 	def del_icon_signal(self,index_list):
 		"""remove an audio sound from specified icon"""
