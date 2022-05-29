@@ -7,7 +7,7 @@
 
 __doc__ = "interface module for managing the virtual world"#information describing the purpose of this module
 __status__ = "Development"#should be one of 'Prototype' 'Development' 'Production' 'Deprecated' 'Release'
-__version__ = "2.0.0"# version number,date or about last modification made compared to the previous version
+__version__ = "3.0.0"# version number,date or about last modification made compared to the previous version
 __license__ = "public domain"# ref to an official existing License
 #__copyright__ = "Copyright 2000, The X Project"
 __date__ = "2022-04-01"#started creation date / year month day
@@ -472,7 +472,7 @@ class Interface:
 		logger.log_debug(49,[scn_name],context=self.name)
 	
 	
-	def add_scene_item_noise(self,scn_name,index_list,sound_name,volumes=(1,1),pitch=1,loop=False,angles=(0,360),rolloff_factor=1,reference_distance=1):
+	def add_scene_item_noise(self,scn_name,index_list,sound_name,volumes=(1,1),pitch=1,loop=False,angles=(0,360),spreading_factor=1):
 		"""
 		append an item noise of the specified scene
 		volumes is the gain of the sound
@@ -483,7 +483,7 @@ class Interface:
 		reference_distance for the sound calculation (see openAL doc)
 		"""
 		sound=self.sounds_lib[sound_name]
-		noise= noises.Noise(sound,volumes,pitch,loop,angles,rolloff_factor,reference_distance)
+		noise= noises.Noise(sound,volumes,pitch,loop,angles,spreading_factor)
 		self.scenes[scn_name].add_item_noise(index_list,noise)
 		logger.log_debug(51,[scn_name],context=self.name)
 	

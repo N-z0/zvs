@@ -7,7 +7,7 @@
 
 __doc__ = "module containing Scene class"#information describing the purpose of this module
 __status__ = "Development"#should be one of 'Prototype' 'Development' 'Production' 'Deprecated' 'Release'
-__version__ = "1.0.0"# version number,date or about last modification made compared to the previous version
+__version__ = "1.0.1"# version number,date or about last modification made compared to the previous version
 __license__ = "public domain"# ref to an official existing License
 #__copyright__ = "Copyright 2000, The X Project"
 __date__ = "2022-04-01"#started creation date / year month day
@@ -204,6 +204,10 @@ class Scene(items.Item) :
 	
 	def render_item_sound(self):
 		"""play all 3d sound of the items"""
+		
+		openal.alDistanceModel( openal.AL_EXPONENT_DISTANCE )#The default distance model is AL_INVERSE_DISTANCE_CLAMPED
+		#openal.alDopplerFac(1)#The default Doppler factor is 1
+		#openal. alSpeedOfSound(343.3)# The default speed of sound is 343.3
 		
 		### for each Listeners
 		### for now only one ear is considered

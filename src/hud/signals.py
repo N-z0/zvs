@@ -7,7 +7,7 @@
 
 __doc__ = "module for the signals class"#information describing the purpose of this module
 __status__ = "Development"#should be one of 'Prototype' 'Development' 'Production' 'Deprecated' 'Release'
-__version__ = "2.0.0"# version number,date or about last modification made compared to the previous version
+__version__ = "2.0.1"# version number,date or about last modification made compared to the previous version
 __license__ = "public domain"# ref to an official existing License
 #__copyright__ = "Copyright 2000, The X Project"
 __date__ = "2022-04-01"#started creation date / year month day
@@ -50,7 +50,7 @@ class Signal :
 		self.source.set_cone_outer_gain(1)
 		self.source.set_cone_inner_angle(0)
 		self.source.set_cone_outer_angle(360)
-		self.source.set_rolloff_factor(1)
+		self.source.set_rolloff_factor(2)
 		self.source.set_reference_distance(1)
 		self.source.set_source_relative(True)
 		

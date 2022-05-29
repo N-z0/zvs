@@ -7,7 +7,7 @@
 
 __doc__ = "module for the noises class"#information describing the purpose of this module
 __status__ = "Development"#should be one of 'Prototype' 'Development' 'Production' 'Deprecated' 'Release'
-__version__ = "1.0.0"# version number,date or about last modification made compared to the previous version
+__version__ = "2.0.0"# version number,date or about last modification made compared to the previous version
 __license__ = "public domain"# ref to an official existing License
 #__copyright__ = "Copyright 2000, The X Project"
 __date__ = "2022-04-01"#started creation date / year month day
@@ -33,8 +33,12 @@ from commonz.ds import array
 
 class Noise :
 	"""a 3d sound for the items"""
-	def __init__(self,sound,volumes,pitch,loop,angles,rolloff_factor,reference_distance):
-		"""see openAL documentation about the parameters"""
+	def __init__(self,sound,volumes,pitch,loop,angles,spreading_factor):
+		"""
+		spreading>1 reduce the loss of volumes
+		spreading<1 increase the loss of volumes
+		see openAL documentation for others the parameters
+		"""
 		
 		### instance a source object
 		self.source=openal.Source(sound.get_buffer())
@@ -50,8 +54,8 @@ class Noise :
 		self.source.set_pitch(pitch)
 		self.source.set_cone_inner_angle(math.degrees(angles[0]))
 		self.source.set_cone_outer_angle(math.degrees(angles[1]))
-		self.source.set_rolloff_factor(rolloff_factor)
-		self.source.set_reference_distance(reference_distance)
+		self.source.set_rolloff_factor(2)
+		self.source.set_reference_distance(spreading_factor)
 		
 		### for the absolute calculation of vectors
 		self.position_vector=array.vector( 0,0,0,1 )
