@@ -1,0 +1,6 @@
+#Optional	#Name	#VersionMini	#VersionMaxi	#Address
+false	commonz	4.0.0	https://github.com/N-z0/commonz
+false	PyOpenGL	3.1.6	http://pyopengl.sourceforge.net/index.html
+false	PyOpenAL	0.7.11a1	https://github.com/Zuzu-Typ/PyOpenAL
+false	numpy	1.17.4	https://numpy.org/
+false	PyOgg	0.6.14a1	https://github.com/TeamPyOgg/PyOgg
