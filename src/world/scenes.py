@@ -48,6 +48,7 @@ class Scene(items.Item) :
 	def __init__(self,shader,background_color,fog_color,blend_factor,position,orientation,scale):
 		"""position orientation scale are normally not necessary"""
 		items.Item.__init__(self,True,position,orientation,scale)
+		self.changed=False
 		
 		self.shader=shader
 		
@@ -70,12 +71,12 @@ class Scene(items.Item) :
 		self.render_calculation(self.abs_mod_mat,self.view_mat)
 		
 		logger.log_debug(76,context=log_context)
-		self.render_item_sound()
+		self.render_items_sound()
 		
 		logger.log_debug(77,context=log_context)
-		self.render_item_draw(window_size)
+		self.render_items_draw(window_size)
 	
-	def render_item_draw(self,window_size):
+	def render_items_draw(self,window_size):
 		"""draw all 3d graphic of the items"""
 		
 		### glClear values
@@ -202,7 +203,7 @@ class Scene(items.Item) :
 		### finish the draw
 		#gl.glFlush()
 	
-	def render_item_sound(self):
+	def render_items_sound(self):
 		"""play all 3d sound of the items"""
 		
 		openal.alDistanceModel( openal.AL_EXPONENT_DISTANCE )#The default distance model is AL_INVERSE_DISTANCE_CLAMPED
@@ -247,44 +248,72 @@ class Scene(items.Item) :
 			self.blend_factor= numpy.array( (blend_factor,), dtype=numpy.float32 )
 		
 	
-	def add_light(self,index_list,light):
+	def add_light(self,parent_index,light):
 		"""append a light item"""
-		parent= self.get_child(index_list[:-1])
-		parent.add_child(index_list[-1],light)
-		self.lights_list.append(light)
+		if parent_index is None :
+			parent=self
+		else :
+			parent=self.items_list[parent_index]
+		parent.add_child(light)
+		
+		if None in self.lights_list :
+			light_index= self.lights_list.index(None)
+			self.lights_list[light_index]=light
+		else :
+			light_index= len(self.lights_list)
+			self.lights_list.append(light)
+		
+		return light_index
 	
-	def set_light(self,index_list,ambient_color,diffuse_color):
+	def set_light(self,light_index,ambient_color,diffuse_color):
 		"""change light item parameters"""
-		light= self.get_child(index_list)
+		light= self.lights_list[light_index]
 		light.set_color_ambient(ambient_color)
 		light.set_color_diffuse(diffuse_color)
 	
-	def del_light(self,index_list):
+	def del_light(self,parent_index,light_index):
 		"""remove a specified light item"""
-		parent= self.get_child(index_list[:-1])
-		light= parent.get_child(index_list[-1])
-		self.lights_list.remove(light)
-		parent.del_child(index_list[-1])
+		if parent_index is None :
+			parent=self
+		else :
+			parent=self.items_list[parent_index]
+		parent.del_child(light_index)
+		
+		self.lights_list[light_index]=None
 	
 	
-	def add_eye(self,index_list,eye):
+	def add_eye(self,parent_index,eye):
 		"""append an eye item"""
-		parent= self.get_child(index_list[:-1])
-		parent.add_child(index_list[-1],eye)
-		self.eyes_list.append(eye)
+		if parent_index is None :
+			parent=self
+		else :
+			parent=self.items_list[parent_index]
+		parent.add_child(eye)
+		
+		if None in self.eyes_list :
+			eye_index= self.eyes_list.index(None)
+			self.eyes_list[eye_index]=eye
+		else :
+			eye_index= len(self.eyes_list)
+			self.eyes_list.append(eye)
+		
+		return eye_index
 	
-	def set_eye(self,items_index,window_size,frame_position,frame_size,focal):
+	def set_eye(self,eye_index,window_size,frame_position,frame_size,focal):
 		"""change eye item parameters"""
-		eye= self.get_child(items_index)
+		eye= self.eyes_list[eye_index]
 		eye.set_frame_position(frame_position)
 		eye.set_projection(window_size,frame_size,focal)
 	
-	def del_eye(self,index_list):
+	def del_eye(self,parent_index,eye_index):
 		"""remove a specified eye item"""
-		parent= self.get_child(index_list[:-1])
-		eye= parent.get_child(index_list[-1])
-		self.eyes_list.remove(eye)
-		parent.del_child(index_list[-1])
+		if parent_index is None :
+			parent=self
+		else :
+			parent=self.items_list[parent_index]
+		parent.del_child(eye_index)
+		
+		self.eyes_list[eye_index]=None
 	
 	
 	def resize(self,window_size):
@@ -293,72 +322,100 @@ class Scene(items.Item) :
 			eye.resize(window_size)
 	
 	
-	def add_ear(self,index_list,ear):
+	def add_ear(self,parent_index,ear):
 		"""append an ear item"""
-		parent= self.get_child(index_list[:-1])
-		parent.add_child(index_list[-1],ear)
-		self.ears_list.append(ear)
+		if parent_index is None :
+			parent=self
+		else :
+			parent=self.items_list[parent_index]
+		parent.add_child(ear)
+		
+		if None in self.ears_list :
+			ear_index= self.ears_list.index(None)
+			self.ears_list[ear_index]=ear
+		else :
+			ear_index= len(self.ears_list)
+			self.ears_list.append(ear)
+		
+		return ear_index
 	
-	def set_ear(self,items_index,volume):
+	
+	def set_ear(self,ear_index,volume):
 		"""change ear item parameters"""
-		ear= self.get_child(items_index)
+		ear= self.ears_list[ear_index]
 		ear.set_volume(volume)
 	
-	def del_ear(self,index_list):
+	def del_ear(self,parent_index,ear_index):
 		"""remove a specified ear item"""
-		### first remove from the list
-		parent= self.get_child(index_list[:-1])
-		ear= parent.get_child(index_list[-1])
-		self.ears_list.remove(ear)
-		parent.del_child(index_list[-1])
-	
-	
-	def add_item_child(self,index_list,child):
-		"""append a child"""
-		parent= self.get_child(index_list[:-1])
-		parent.add_child(index_list[-1],child)
-	
-	def set_item(self,index_list,activity,position,orientation,scale):
-		"""change parameters of one child"""
-		child= self.get_child(index_list)
-		child.set_activity(activity)
-		child.set_transformation_relative(position,orientation,scale)
-	
-	def del_item_child(self,index_list):
-		"""remove a child"""
-		parent= self.get_child(index_list[:-1])
-		parent.del_child(index_list[-1])
-	
-	
-	def add_item_model(self,index_list,model):
-		"""assign 3d graphic to one item"""
-		child= self.get_child(index_list)
-		child.add_model(model)
+		if parent_index is None :
+			parent=self
+		else :
+			parent=self.items_list[parent_index]
+		parent.del_child(ear_index)
 		
-	def set_item_model(self,index_list,mesh_group):
+		self.ears_list[ear_index]=None
+	
+	
+	def add_item(self,parent_index,item):
+		"""append a child"""
+		if parent_index is None :
+			parent=self
+		else :
+			parent=self.items_list[parent_index]
+		parent.add_child(item)
+		
+		if None in self.items_list :
+			item_index= self.items_list.index(None)
+			self.items_list[item_index]=item
+		else :
+			item_index= len(self.items_list)
+			self.items_list.append(item)
+		
+		return item_index
+	
+	
+	def set_item(self,item_index,activity,position,orientation,scale,cumulative):
+		"""change parameters of one child"""
+		item= self.items_list[item_index]
+		item.set_activity(activity)
+		item.reckon_relative_transformation(position,orientation,scale,cumulative)
+	
+	def del_item(self,parent_index,item_index):
+		"""remove a child"""
+		parent= self.items_list[parent_index]
+		parent.del_child(item_index)
+		
+		self.items_list[item_index]=None
+	
+	def add_item_model(self,item_index,model):
+		"""assign 3d graphic to one item"""
+		item= self.items_list[item_index]
+		item.add_model(model)
+		
+	def set_item_model(self,item_index,mesh_group):
 		"""change 3d graphic for the specified item"""
-		child= self.get_child(index_list)
-		child.set_model(mesh_group)
+		item= self.items_list[item_index]
+		item.set_model(mesh_group)
 	
-	def del_item_model(self,index_list):
+	def del_item_model(self,item_index):
 		"""remove 3d graphic from specified item"""
-		child= self.get_child(index_list)
-		child.del_model()
+		item= self.items_list[item_index]
+		item.del_model()
 	
 	
-	def add_item_noise(self,index_list,noise):
+	def add_item_noise(self,item_index,noise):
 		"""assign 3d sound to one item"""
-		child= self.get_child(index_list)
-		child.add_noise(noise)
+		item= self.items_list[item_index]
+		item.add_noise(noise)
 
-	def set_item_noise(self,index_list,volumes,pitch,playout):
+	def set_item_noise(self,item_index,volumes,pitch,playout):
 		"""change 3d sound for the specified item"""
-		child= self.get_child(index_list)
-		child.set_noise(volumes,pitch,playout)
+		item= self.items_list[item_index]
+		item.set_noise(volumes,pitch,playout)
 	
-	def del_item_noise(self,index_list):
+	def del_item_noise(self,item_index):
 		"""remove 3d sound from a specified item"""
-		child= self.get_child(index_list)
-		child.del_noise()
+		item= self.items_list[item_index]
+		item.del_noise()
 	
 	

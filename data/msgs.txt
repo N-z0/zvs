@@ -13,7 +13,7 @@ loading albedo texture resource: {}
 loading smoothness texture resource: {}
 loading metallic texture resource: {}
 loading normal texture resource: {}
-loading mesh resource: {}:{}
+loading mesh resource: {}
 loading materials resource: {}
 
 

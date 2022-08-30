@@ -40,7 +40,7 @@ from commonz.ds import array
 
 class Mesh:
 	"""store an openGL 3d mesh as resource for world items"""
-	def __init__(self,pathname,name=''):
+	def __init__(self,pathname):
 		"""
 		pathname must be the path of a valid obj file
 		name is the object that need to retrieve from the file
@@ -54,61 +54,57 @@ class Mesh:
 		vertice_list=datafile[obj.V]
 		normal_list=datafile[obj.VN]
 		
-		### get the first object name if no default name
+		### get the vertex objects
+		self.objects=datafile[obj.OBJECTS]
 		#print('mesh objects:',datafile[obj.OBJECTS].keys())
-		if not name :
-			names_list= tuple(datafile[obj.OBJECTS].keys())
-			name=names_list[0]
-		
-		### get the vertex groups
-		self.groups=datafile[obj.OBJECTS][name]
-		#print('mesh groups:',datafile[obj.OBJECTS][name].keys())
 		
 		### compile vertex data
 		vertex_data=()
 		offset=quantum=0
-		for group_name in self.groups :
-			surfaces=self.groups[group_name]
-			for mat_lib_name in surfaces :
-				mat_lib=surfaces[mat_lib_name]
-				for mat_name in mat_lib :
-					faces_list=mat_lib[mat_name]
-					for face in faces_list :
-						new_face=[]
-						for vertex in face :
-							xyz=vertice_list[vertex[0]-1]
-							uv=vertex_list[vertex[1]-1]
-							nor=normal_list[vertex[2]-1]
-							new_face.append([xyz,uv,nor])
+		for object_name in self.objects :
+			groups=self.objects[object_name]
+			for group_name in groups :
+				surfaces=groups[group_name]
+				for mat_lib_name in surfaces :
+					mat_lib=surfaces[mat_lib_name]
+					for mat_name in mat_lib :
+						faces_list=mat_lib[mat_name]
+						for face in faces_list :
+							new_face=[]
+							for vertex in face :
+								xyz=vertice_list[vertex[0]-1]
+								uv=vertex_list[vertex[1]-1]
+								nor=normal_list[vertex[2]-1]
+								new_face.append([xyz,uv,nor])
+								
+							## Tangent Bitangent calculation
+							p0=new_face[0]
+							p1=new_face[1]
+							p2=new_face[2]
+							edge1= (p1[0][0]-p0[0][0], p1[0][1]-p0[0][1], p1[0][2]-p0[0][2])
+							edge2= (p2[0][0]-p0[0][0], p2[0][1]-p0[0][1], p2[0][2]-p0[0][2])
+							delta1= (p1[1][0]-p0[1][0], p1[1][1]-p0[1][1])
+							delta2= (p2[1][0]-p0[1][0], p2[1][1]-p0[1][1])
 							
-						## Tangent Bitangent calculation
-						p0=new_face[0]
-						p1=new_face[1]
-						p2=new_face[2]
-						edge1= (p1[0][0]-p0[0][0], p1[0][1]-p0[0][1], p1[0][2]-p0[0][2])
-						edge2= (p2[0][0]-p0[0][0], p2[0][1]-p0[0][1], p2[0][2]-p0[0][2])
-						delta1= (p1[1][0]-p0[1][0], p1[1][1]-p0[1][1])
-						delta2= (p2[1][0]-p0[1][0], p2[1][1]-p0[1][1])
+							f = 1.0 / (delta1[0]*delta2[1] - delta2[0]*delta1[1])
+							
+							tx = f * (delta2[1] * edge1[0] - delta1[1] * edge2[0])
+							ty = f * (delta2[1] * edge1[1] - delta1[1] * edge2[1])
+							tz = f * (delta2[1]  * edge1[2] - delta1[1] * edge2[2])
+							tangent=tuple(array.normalized_vector(tx,ty,tz))
+							
+							bx = f * (-delta2[0] * edge1[0] + delta1[0] * edge2[0])
+							by = f * (-delta2[0] * edge1[1] + delta1[0] * edge2[1])
+							bz = f * (-delta2[0] * edge1[2] + delta1[0] * edge2[2])
+							bitangent=tuple(array.normalized_vector(bx,by,bz))
+							
+							for vertex in new_face :
+								vertex_data += vertex[0]+vertex[1]+vertex[2]+tangent+bitangent
+								quantum+=1
 						
-						f = 1.0 / (delta1[0]*delta2[1] - delta2[0]*delta1[1])
-						
-						tx = f * (delta2[1] * edge1[0] - delta1[1] * edge2[0])
-						ty = f * (delta2[1] * edge1[1] - delta1[1] * edge2[1])
-						tz = f * (delta2[1]  * edge1[2] - delta1[1] * edge2[2])
-						tangent=tuple(array.normalized_vector(tx,ty,tz))
-						
-						bx = f * (-delta2[0] * edge1[0] + delta1[0] * edge2[0])
-						by = f * (-delta2[0] * edge1[1] + delta1[0] * edge2[1])
-						bz = f * (-delta2[0] * edge1[2] + delta1[0] * edge2[2])
-						bitangent=tuple(array.normalized_vector(bx,by,bz))
-						
-						for vertex in new_face :
-							vertex_data += vertex[0]+vertex[1]+vertex[2]+tangent+bitangent
-							quantum+=1
-					
-					mat_lib[mat_name]=(offset,quantum)
-					offset+=quantum
-					quantum=0
+						mat_lib[mat_name]=(offset,quantum)
+						offset+=quantum
+						quantum=0
 		
 		### get a new Vertex Array Object and activate it as the current
 		self.vao = gl.glGenVertexArrays(1)
@@ -164,24 +160,28 @@ class Mesh:
 		gl.glBindBuffer(gl.GL_ARRAY_BUFFER, 0)
 	
 	
-	def get_groups_names(self):
+	def get_objects_names(self):
+		"""return the names of the objects"""
+		return self.objects.keys()
+	
+	def get_groups_names(self,object_name):
 		"""return the names of the vertex groups"""
-		return self.groups.keys()
+		return self.objects[object_name].keys()
 	
-	def get_matlib_names(self,group_name):
+	def get_matlibs_names(self,object_name,group_name):
 		"""return the materials lib list used by the specified group"""
-		return self.groups[group_name].keys()
+		return self.objects[object_name][group_name].keys()
 	
-	def get_material_names(self,group_name,mat_lib_name):
+	def get_materials_names(self,object_name,group_name,mat_lib_name):
 		"""return the materials list used by the specified materials lib"""
-		return self.groups[group_name][mat_lib_name].keys()
+		return self.objects[object_name][group_name][mat_lib_name].keys()
 	
 	
-	def draw(self,group_name,mat_lib_name,material_name):
+	def draw(self,object_name,group_name,mat_lib_name,material_name):
 		"""draw the on openGL 3D mesh"""
 		
 		### get index of the selected vertex
-		ref=self.groups[group_name][mat_lib_name][material_name]
+		ref=self.objects[object_name][group_name][mat_lib_name][material_name]
 		ofset=ref[0]
 		quantum=ref[1]
 		

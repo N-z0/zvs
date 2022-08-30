@@ -163,52 +163,67 @@ class Overlay(icons.Icon) :
 		self.render_signal()
 	
 	
-	def add_icon_child(self,index_list,child):
+	def add_icon(self,parent_index,icon):
 		"""append an icon child"""
-		parent= self.get_child(index_list[:-1])
-		parent.add_child(index_list[-1],child)
-	
-	def set_icon(self,index_list,activity,position,orientation,scale):
-		"""change the parameters of one icon child"""
-		child= self.get_child(index_list)
-		child.set_activity(activity)
-		child.set_relative_transformation(position,orientation,scale)
-	
-	def del_icon_child(self,index_list):
-		"""remove an icon child"""
-		parent= self.get_child(index_list[:-1])
-		parent.del_child(index_list[-1])
-	
-	
-	def add_icon_sprite(self,index_list,sprite):
-		"""assign 2d graphic to one icon"""
-		child= self.get_child(index_list)
-		child.add_sprite(sprite)
+		if parent_index is None :
+			parent=self
+		else :
+			parent=self.icons_list[parent_index]
+		parent.add_child(icon)
 		
-	def set_icon_sprite(self,index_list,color):
+		if None in self.icons_list :
+			icon_index= self.icons_list.index(None)
+			self.icons_list[icon_index]=icon
+		else :
+			icon_index= len(self.icons_list)
+			self.icons_list.append(icon)
+		
+		return icon_index
+	
+	
+	def set_icon(self,icon_index,activity,position,orientation,scale):
+		"""change the parameters of one icon child"""
+		icon= self.icons_list[icon_index]
+		icon.set_activity(activity)
+		icon.set_relative_transformation(position,orientation,scale)
+	
+	def del_icon(self,parent_index,icon_index):
+		"""remove an icon child"""
+		parent= self.icons_list[parent_index]
+		parent.del_child(icon_index)
+		
+		self.icons_list[icon_index]=None
+	
+	
+	def add_icon_sprite(self,icon_index,sprite):
+		"""assign 2d graphic to one icon"""
+		icon= self.icons_list[icon_index]
+		icon.add_sprite(sprite)
+		
+	def set_icon_sprite(self,icon_index,color):
 		"""change a 2d graphic for specified icon"""
-		child= self.get_child(index_list)
-		child.set_sprite(color)
+		icon= self.icons_list[icon_index]
+		icon.set_sprite(color)
 	
-	def del_icon_sprite(self,index_list):
+	def del_icon_sprite(self,icon_index):
 		"""remove the 2d graphic from specified icon"""
-		child= self.get_child(index_list)
-		child.del_sprite()
+		icon= self.icons_list[icon_index]
+		icon.del_sprite()
 	
 	
-	def add_icon_signal(self,index_list,noise):
+	def add_icon_signal(self,icon_index,noise):
 		"""assign audio sound to one icon"""
-		child= self.get_child(index_list)
-		child.add_signal(noise)
+		icon= self.icons_list[icon_index]
+		icon.add_signal(noise)
 
-	def set_icon_signal(self,index_list,volume,pitch,playout):
+	def set_icon_signal(self,icon_index,volume,pitch,playout):
 		"""change an audio sound for specified icon"""
-		child= self.get_child(index_list)
-		child.set_signal(volume,pitch,playout)
+		icon= self.icons_list[icon_index]
+		icon.set_signal(volume,pitch,playout)
 	
-	def del_icon_signal(self,index_list):
+	def del_icon_signal(self,icon_index):
 		"""remove an audio sound from specified icon"""
-		child= self.get_child(index_list)
-		child.del_signal()
+		icon= self.icons_list[icon_index]
+		icon.del_signal()
 	
 	

@@ -100,17 +100,17 @@ class Interface:
 		### resources libraries
 		self.bitmaps_lib={}
 		self.audios_lib={}
-		self.meshs_lib={}
+		self.meshes_lib={}
 		self.textures_lib={}
-		self.material_lib={}
+		self.materials_lib={}
 		self.sounds_lib={}
 		
 		### scenes
-		self.scenes={}
+		self.scenes_list=[]
 		self.current_scene=None
 		
 		### overlays
-		self.overlays={}
+		self.overlays_list=[]
 		self.current_overlay=None
 		
 		### get data ready for later loading shaders
@@ -178,140 +178,211 @@ class Interface:
 				self.combo_shaders_lib[name]=cs
 	
 	
-	def load_resource_audio(self,name,pathname):
+	def load_resource_audio(self,pathname):
 		"""stock audio from a sound file for the icons"""
-		if not name in self.audios_lib :
-			logger.log_info(7,[name],context=self.name)
-			self.audios_lib[name]=audios.Audio(pathname)
+		if pathname in self.audios_lib :
+			audio= self.audios_lib[pathname]
+		else :
+			logger.log_info(7,[pathname],context=self.name)
+			audio= audios.Audio(pathname)
+			self.audios_lib[pathname]= audio
+		audios_list= list(self.audios_lib.values())
+		return audios_list.index(audio)
 	
-	def load_resource_bitmap(self,name,pathname):
+	
+	def load_resource_bitmap(self,pathname):
 		"""stock bitmap from a image file for the icons"""
-		if not name in self.bitmaps_lib :
-			logger.log_info(8,[name],context=self.name)
-			self.bitmaps_lib[name]=bitmaps.Bitmap(pathname)
+		if pathname in self.bitmaps_lib :
+			bitmap= self.bitmaps_lib[pathname]
+		else :
+			logger.log_info(8,[pathname],context=self.name)
+			bitmap= bitmaps.Bitmap(pathname)
+			self.bitmaps_lib[pathname]= bitmap
+		bitmaps_list= list(self.bitmaps_lib.values())
+		return bitmaps_list.index(bitmap)
 	
-	def load_resource_sound(self,name,pathname):
+	
+	def load_resource_sound(self,pathname):
 		"""stock sound from a file for the items"""
-		if not name in self.sounds_lib :
-			logger.log_info(9,[name],context=self.name)
-			self.sounds_lib[name]=sounds.Sound(pathname)
+		if pathname in self.sounds_lib :
+			sound= self.sounds_lib[pathname]
+		else :
+			logger.log_info(9,[pathname],context=self.name)
+			sound= sounds.Sound(pathname)
+			self.sounds_lib[pathname]= sound
+		sounds_list= list(self.sounds_lib.values())
+		return sounds_list.index(sound)
 	
-	def load_resource_texture_emissive(self,name,pathname):
+	
+	def load_resource_texture_emissive(self,pathname):
 		"""stock emissive texture from image file for the models"""
-		if not name in self.textures_lib :
-			logger.log_info(10,[name],context=self.name)
-			self.textures_lib[name]= textures.Emissive_Texture(pathname)
+		if pathname in self.textures_lib :
+			texture= self.textures_lib[pathname]
+		else :
+			logger.log_info(10,[pathname],context=self.name)
+			texture= textures.Emissive_Texture(pathname)
+			self.textures_lib[pathname]= texture
+		textures_list= list(self.textures_lib.values())
+		return textures_list.index(texture)
 	
-	def load_resource_texture_ao(self,name,pathname):
+	
+	def load_resource_texture_ao(self,pathname):
 		"""stock ao texture from image file for the models"""
-		if not name in self.textures_lib :
-			logger.log_info(11,[name],context=self.name)
-			self.textures_lib[name]= textures.AO_Texture(pathname)
+		if pathname in self.textures_lib :
+			texture= self.textures_lib[pathname]
+		else :
+			logger.log_info(11,[pathname],context=self.name)
+			texture= textures.AO_Texture(pathname)
+			self.textures_lib[pathname]= texture
+		textures_list= list(self.textures_lib.values())
+		return textures_list.index(texture)
 	
-	def load_resource_texture_albedo(self,name,pathname):
+	
+	def load_resource_texture_albedo(self,pathname):
 		"""stock albedo texture from image file for the models"""
-		if not name in self.textures_lib :
-			logger.log_info(12,[name],context=self.name)
-			self.textures_lib[name]= textures.Albedo_Texture(pathname)
+		if pathname in self.textures_lib :
+			texture= self.textures_lib[pathname]
+		else :
+			logger.log_info(12,[pathname],context=self.name)
+			texture= textures.Albedo_Texture(pathname)
+			self.textures_lib[pathname]= texture
+		textures_list= list(self.textures_lib.values())
+		return textures_list.index(texture)
 	
-	def load_resource_texture_smoothness(self,name,pathname):
+	
+	def load_resource_texture_smoothness(self,pathname):
 		"""stock smoothness texture from image file for the models"""
-		if not name in self.textures_lib :
-			logger.log_info(13,[name],context=self.name)
-			self.textures_lib[name]= textures.Smoothness_Texture(pathname)
+		if pathname in self.textures_lib :
+			texture= self.textures_lib[pathname]
+		else :
+			logger.log_info(13,[pathname],context=self.name)
+			texture= textures.Smoothness_Texture(pathname)
+			self.textures_lib[pathname]= texture
+		textures_list= list(self.textures_lib.values())
+		return textures_list.index(texture)
 	
-	def load_resource_texture_metallic(self,name,pathname):
+	
+	def load_resource_texture_metallic(self,pathname):
 		"""stock metallic texture from image file for the models"""
-		if not name in self.textures_lib :
-			logger.log_info(14,[name],context=self.name)
-			self.textures_lib[name]= textures.Metallic_Texture(pathname)
+		if pathname in self.textures_lib :
+			texture= self.textures_lib[pathname]
+		else :
+			logger.log_info(14,[pathname],context=self.name)
+			texture= textures.Metallic_Texture(pathname)
+			self.textures_lib[pathname]= texture
+		textures_list= list(self.textures_lib.values())
+		return textures_list.index(texture)
 	
-	def load_resource_texture_normal(self,name,pathname):
+	
+	def load_resource_texture_normal(self,pathname):
 		"""stock normal texture from image file for the models"""
-		if not name in self.textures_lib :
-			logger.log_info(15,[name],context=self.name)
-			self.textures_lib[name]= textures.Normal_Texture(pathname)
+		if pathname in self.textures_lib :
+			texture= self.textures_lib[pathname]
+		else :
+			logger.log_info(15,[pathname],context=self.name)
+			texture= textures.Normal_Texture(pathname)
+			self.textures_lib[pathname]= texture
+		textures_list= list(self.textures_lib.values())
+		return textures_list.index(texture)
 	
-	def load_resource_mesh(self,name,pathname,subname=''):
-		"""
-		stock mesh from file for the models
-		subname is for selecting a sub mesh object
-		"""
-		if not name in self.meshs_lib :
-			self.meshs_lib[name]={}
-		if not subname in self.meshs_lib[name] :
-			logger.log_info(16,[name,subname],context=self.name)
-			self.meshs_lib[name][subname]=meshes.Mesh(pathname,subname)
 	
-	def load_resource_material(self,name,pathname):
+	def load_resource_mesh(self,pathname):
+		"""stock mesh from file for the models"""
+		if pathname in self.meshes_lib :
+			mesh= self.meshes_lib[pathname]
+		else :
+			logger.log_info(16,[pathname],context=self.name)
+			mesh= meshes.Mesh(pathname)
+			self.meshes_lib[pathname]= mesh
+		meshes_list= list(self.meshes_lib.values())
+		return meshes_list.index(mesh)
+	
+	
+	def load_resource_material(self,pathname):
 		"""stock material from file for the models"""
-		if not name in self.material_lib :
-			logger.log_info(17,[name],context=self.name)
-			self.material_lib[name]=materials.Mat_Lib(pathname)
+		if pathname in self.materials_lib :
+			material= self.materials_lib[pathname]
+		else :
+			logger.log_info(17,[pathname],context=self.name)
+			material= materials.Mat_Lib(pathname)
+			self.materials_lib[pathname]= material
+		materials_list= list(self.materials_lib.values())
+		return materials_list.index(material)
 	
 	
-	def add_overlay(self,overlay_name,shader_index,blend_factor=1,position=(0,0),orientation=0,scale=(1,1)):
+	def add_overlay(self,shader_name,blend_factor=1,position=(0,0),orientation=0,scale=(1,1)):
 		"""
 		append a new overlay
 		blend_factor is the transparency and must be set between 0 and 1
 		position orientation scale are the starting placement of the overlay icons
 		"""
-		shader=self.combo_shaders_lib[shader_index]
-		self.overlays[overlay_name]= overlays.Overlay(shader,blend_factor,position,orientation,scale)
-		logger.log_debug(20,[overlay_name],context=self.name)
+		shader=self.combo_shaders_lib[shader_name]
+		
+		overlay= overlays.Overlay(shader,blend_factor,position,orientation,scale)
+		if None in self.overlays_list :
+			overlay_index= self.overlays_list.index(None)
+			self.overlays_list[overlay_index]=overlay
+		else :
+			overlay_index= len(self.overlays_list)
+			self.overlays_list.append(overlay)
+		logger.log_debug(20,[str(overlay_index)],context=self.name)
+		
+		return overlay_index
 	
-	def set_overlay(self,overlay_name,blend_factor=None):
+	
+	def set_overlay(self,overlay_index,blend_factor=None):
 		"""
 		change parameters of overlay
 		not given parameters are ignored and will produce no changes
 		blend_factor is the transparency and must be set between 0 and 1
 		"""
-		overlay= self.overlays[overlay_name]
+		overlay= self.overlays_list[overlay_index]
 		overlay.set_blend_factor(blend_factor)
-		logger.log_debug(21,[overlay_name],context=self.name)
+		logger.log_debug(21,[str(overlay_index)],context=self.name)
 	
-	def del_overlay(self,overlay_name):
+	def del_overlay(self,overlay_index):
 		"""remove an exiting overlay"""
 		### check if the overlay is the current overlay
-		if self.overlays[overlay_name]==self.current_overlay :
+		if self.overlays_list[overlay_index]==self.current_overlay :
 			self.current_overlay=None
 		### delete the overlay in the dico
-		del self.overlays[overlay_name]
-		logger.log_debug(22,[overlay_name],context=self.name)
+		self.overlays_list[overlay_index]=None
+		logger.log_debug(22,[str(overlay_index)],context=self.name)
 	
-	def select_overlay(self,overlay_name):
+	def select_overlay(self,overlay_index):
 		"""select witch overlay will be display"""
-		self.current_overlay= self.overlays[overlay_name]
-		logger.log_debug(23,[overlay_name],context=self.name)
+		self.current_overlay= self.overlays_list[overlay_index]
+		logger.log_debug(23,[str(overlay_index)],context=self.name)
 	
 	
-	def add_overlay_icon(self,overlay_name,index_list,show=True,position=(0,0),orientation=0,scale=(1,1)):
+	def add_overlay_icon(self,overlay_index,parent_index,show=True,position=(0,0),orientation=0,scale=(1,1)):
 		"""
 		append new icon into the specified overlay
 		if show is True the icon will be enabled in the specified overlay
 		position orientation scale change icon placement in the specified overlay
 		"""
 		icon= icons.Icon(show,position,orientation,scale)
-		self.overlays[overlay_name].add_icon_child(index_list,icon)
-		logger.log_debug(25,[overlay_name],context=self.name)
+		icon_index=self.overlays_list[overlay_index].add_icon(parent_index,icon)
+		logger.log_debug(25,[str(overlay_index)],context=self.name)
+		return icon_index
 	
-	def set_overlay_icon(self,overlay_name,index_list,activity=None,position=None,orientation=None,scale=None):
+	def set_overlay_icon(self,overlay_index,icon_index,activity=None,position=None,orientation=None,scale=None):
 		"""
 		change icon parameters of the specified scene
 		not given parameters are ignored and will produce no changes
 		activity change the icon status in the specified overlay
 		position orientation scale change icon placement in the specified overlay
 		"""
-		self.overlays[overlay_name].set_icon(index_list,activity,position,orientation,scale)
-		logger.log_debug(26,[overlay_name],context=self.name)
+		self.overlays_list[overlay_index].set_icon(icon_index,activity,position,orientation,scale)
+		logger.log_debug(26,[str(overlay_index)],context=self.name)
 	
-	def del_overlay_icon(self,overlay_name,icon_name):
+	def del_overlay_icon(self,overlay_index,parent_index,icon_index):
 		"""remove an icon from specified overlay"""
-		self.overlays[overlay_name].del_icon_child(icon_name)
-		logger.log_debug(27,[overlay_name],context=self.name)
+		self.overlays_list[overlay_index].del_icon_child(parent_index,icon_index)
+		logger.log_debug(27,[str(overlay_index)],context=self.name)
 	
 	
-	def add_overlay_icon_sprite(self,overlay_name,index_list,bitmap_index,anchor=(0.5,0.5),relative_position=False,relative_width=False,relative_height=False,color=(1,1,1)):
+	def add_overlay_icon_sprite(self,overlay_index,icon_index,bitmap_index,anchor=(0.5,0.5),relative_position=False,relative_width=False,relative_height=False,color=(1,1,1)):
 		"""
 		append  a sprite for the specified icon in the specified overlay
 		anchor is considered as starting point of the bitmap
@@ -320,54 +391,58 @@ class Interface:
 		if relative_height is True the height depend of the screen size
 		color will be mixed with the sprite image (must be a RGB vector)
 		"""
-		bitmap= self.bitmaps_lib[bitmap_index]
+		bitmap= list(self.bitmaps_lib.values())[bitmap_index]
 		sprite= sprites.Sprite(self.window_size,bitmap,anchor,relative_position,relative_width,relative_height,color)
-		self.overlays[overlay_name].add_icon_sprite(index_list,sprite)
-		logger.log_debug(29,[overlay_name],context=self.name)
+		self.overlays_list[overlay_index].add_icon_sprite(icon_index,sprite)
+		logger.log_debug(29,[str(overlay_index)],context=self.name)
 	
-	def set_overlay_icon_sprite(self,overlay_name,index_list,color=None):
+	
+	def set_overlay_icon_sprite(self,overlay_index,icon_index,color=None):
 		"""
 		change a sprite parameters for the specified icon in the specified overlay
 		not given parameters are ignored and will produce no changes
 		color will be mixed with the sprite image (must be a RGB vector)
 		"""
-		self.overlays[overlay_name].set_icon_sprite(index_list,sprite)
-		logger.log_debug(30,[overlay_name],context=self.name)
-		
-	def del_overlay_icon_sprite(self,overlay_name,index_list):
-		"""remove a sprite for the specified icon in the specified overlay"""
-		self.overlays[overlay_name].del_icon_sprite(index_list)
-		logger.log_debug(31,[overlay_name],context=self.name)
-		
+		self.overlays_list[overlay_index].set_icon_sprite(icon_index,color)
+		logger.log_debug(30,[str(overlay_index)],context=self.name)
 	
-	def add_overlay_icon_signal(self,overlay_name,index_list,audio_index,volume=1,pitch=1,loop=False):
+	
+	def del_overlay_icon_sprite(self,overlay_index,icon_index):
+		"""remove a sprite for the specified icon in the specified overlay"""
+		self.overlays_list[overlay_index].del_icon_sprite(icon_index)
+		logger.log_debug(31,[str(overlay_index)],context=self.name)
+	
+	
+	def add_overlay_icon_signal(self,overlay_index,icon_index,audio_index,volume=1,pitch=1,loop=False):
 		"""
 		append  an audio signal for the specified icon in the specified overlay
 		volume is the gain of sound (must be between 0 and 1 )
 		repeat is the number of time that the sound will be play (-1 infinite)
 		"""
-		audio=self.audios_lib[audio_index]
+		audio=list(self.audios_lib.values())[audio_index]
 		signal= signals.Signal(audio,volume,pitch,loop)
-		self.overlays[overlay_name].add_icon_signal(index_list,signal)
-		logger.log_debug(33,[overlay_name],context=self.name)
-		
-	def set_overlay_icon_signal(self,overlay_name,index_list,volume=None,pitch=None,playout=None):
+		self.overlays_list[overlay_index].add_icon_signal(icon_index,signal)
+		logger.log_debug(33,[str(overlay_index)],context=self.name)
+	
+	
+	def set_overlay_icon_signal(self,overlay_index,icon_index,volume=None,pitch=None,playout=None):
 		"""
 		change audio signal parameters for the specified icon in the specified overlay
 		not given parameters are ignored and will produce no changes
 		volume is the gain of sound (must be between 0 and 1 )
 		repeat is the number of time that the sound will be play (-1 infinite)
 		"""
-		self.overlays[overlay_name].set_icon_signal(index_list,volume,pitch,playout)
-		logger.log_debug(34,[overlay_name],context=self.name)
+		self.overlays_list[overlay_index].set_icon_signal(icon_index,volume,pitch,playout)
+		logger.log_debug(34,[str(overlay_index)],context=self.name)
 	
-	def del_overlay_icon_signal(self,overlay_name,index_list):
+	
+	def del_overlay_icon_signal(self,overlay_index,icon_index):
 		"""remove an audio signal for the specified icon in the specified overlay"""
-		self.overlays[overlay_name].del_icon_signal(index_list)
-		logger.log_debug(35,[overlay_name],context=self.name)
+		self.overlays_list[overlay_index].del_icon_signal(icon_index)
+		logger.log_debug(35,[str(overlay_index)],context=self.name)
 	
 	
-	def add_scene(self,scn_name,shader_index,background_color=(0,0,0,1),background_fog=(0,0,0,0),blend_factor=1.,position=(0,0,0),orientation=(1,0,0,0),scale=(1,1,1)):
+	def add_scene(self,shader_name,background_color=(0,0,0,1),background_fog=(0,0,0,0),blend_factor=1.,position=(0,0,0),orientation=(1,0,0,0),scale=(1,1,1)):
 		"""
 		append a new scene
 		background_color set the color of where nothing is draw
@@ -375,11 +450,21 @@ class Interface:
 		blend_factor set the color blending between material and textures of objects
 		position orientation scale are vectors for the scene placement
 		"""
-		shader=self.combo_shaders_lib[shader_index]
-		self.scenes[scn_name]= scenes.Scene(shader,background_color,background_fog,blend_factor,position,orientation,scale)
-		logger.log_debug(38,[scn_name],context=self.name)
+		shader=self.combo_shaders_lib[shader_name]
+		
+		scene= scenes.Scene(shader,background_color,background_fog,blend_factor,position,orientation,scale)
+		if None in self.scenes_list :
+			scn_index= self.scenes_list.index(None)
+			self.scenes_list[scn_index]=scene
+		else :
+			scn_index= len(self.scenes_list)
+			self.scenes_list.append(scene)
+		logger.log_debug(38,[str(scn_index)],context=self.name)
+		
+		return scn_index
 	
-	def set_scene(self,scn_name,background=None,fog=None,blend_factor=None):
+	
+	def set_scene(self,scn_index,background=None,fog=None,blend_factor=None):
 		"""
 		change parameters of scene
 		not given parameters are ignored and will produce no changes
@@ -387,54 +472,55 @@ class Interface:
 		fog set the opacity color
 		blend_factor set the color blending between material and textures of objects
 		"""
-		scene= self.scenes[scn_name]
+		scene= self.scenes_list[scn_index]
 		scene.set_background_color(background)
 		scene.set_fog_color(fog)
 		scene.set_blend_factor(blend_factor)
-		logger.log_debug(39,[scn_name],context=self.name)
+		logger.log_debug(39,[str(scn_index)],context=self.name)
 	
-	def del_scene(self,scn_name):
+	def del_scene(self,scn_index):
 		"""remove an exiting scene"""
 		### check if the scene is the current scene
-		if self.scenes[scn_name]==self.current_scene :
+		if self.scenes_list[scn_index]==self.current_scene :
 			self.current_scene=None
-		### delete the scene in the dico
-		del self.scenes[scn_name]
-		logger.log_debug(40,[scn_name],context=self.name)
+		### remove the scene from the list
+		self.scenes_list[scn_index]=None
+		logger.log_debug(40,[str(scn_index)],context=self.name)
 	
-	def select_scene(self,scn_name):
+	def select_scene(self,scn_index):
 		"""select witch scene will be display"""
-		self.current_scene= self.scenes[scn_name]
-		logger.log_debug(41,[scn_name],context=self.name)
+		self.current_scene= self.scenes_list[scn_index]
+		logger.log_debug(41,[str(scn_index)],context=self.name)
 	
 	
-	def add_scene_item(self,scn_name,index_list,show=True,position=(0,0,0),orientation=(1,0,0,0),scale=(1,1,1)):
+	def add_scene_item(self,scn_index,parent_index,show=True,position=(0,0,0),orientation=(1,0,0,0),scale=(1,1,1)):
 		"""
 		append a new item into specified scene
 		if show is True the item will be enable
 		position orientation scale are vectors for the item placement
 		"""
 		item= items.Item(show,position,orientation,scale)
-		self.scenes[scn_name].add_item_child(index_list,item)
-		logger.log_debug(43,[scn_name],context=self.name)
+		item_index=self.scenes_list[scn_index].add_item(parent_index,item)
+		logger.log_debug(43,[str(scn_index)],context=self.name)
+		return item_index
 	
-	def set_scene_item(self,scn_name,index_list,activity=None,position=None,orientation=None,scale=None):
+	def set_scene_item(self,scn_index,item_index,activity=None,position=None,orientation=None,scale=None,cumulative=False):
 		"""
 		change item parameters of the specified scene
 		not given parameters are ignored and will produce no changes
 		activity change item status in the specified scene
 		position orientation scale change item placement in the specified scene
 		"""
-		self.scenes[scn_name].set_item(index_list,activity,position,orientation,scale)
-		logger.log_debug(44,[scn_name],context=self.name)
+		self.scenes_list[scn_index].set_item(item_index,activity,position,orientation,scale,cumulative)
+		logger.log_debug(44,[str(scn_index)],context=self.name)
 	
-	def del_scene_item(self,scn_name,index_list):
+	def del_scene_item(self,scn_index,parent_index,item_index):
 		"""remove an item from a specified scene"""
-		self.scenes[scn_name].del_item_child(index_list)
-		logger.log_debug(45,[scn_name],context=self.name)
+		self.scenes_list[scn_index].del_item(parent_index,item_index)
+		logger.log_debug(45,[str(scn_index)],context=self.name)
 	
 	
-	def add_scene_item_model(self,scn_name,index_list,mesh_index,obj_name,emit_tex_index,ao_tex_index,albedo_tex_index,smooth_tex_index,metal_tex_index,norm_tex_index,matarials_list,group_name=''):
+	def add_scene_item_model(self,scn_index,item_index,mesh_index,obj_name,emit_tex_index,ao_tex_index,albedo_tex_index,smooth_tex_index,metal_tex_index,norm_tex_index,matarials,group_name=''):
 		"""
 		append an item model for the specified scene
 		mesh_index select the mesh library
@@ -443,36 +529,37 @@ class Interface:
 		*_tex_index select all the textures needed
 		matarials_list select all the material library needed
 		"""
-		mesh=self.meshs_lib[mesh_index][obj_name]
-		emit_tex=self.textures_lib[emit_tex_index]
-		ao_tex=self.textures_lib[ao_tex_index]
-		albedo_tex=self.textures_lib[albedo_tex_index]
-		smooth_tex=self.textures_lib[smooth_tex_index]
-		metal_tex=self.textures_lib[metal_tex_index]
-		norm_tex=self.textures_lib[norm_tex_index]
-		matarials={}
-		for matlib_name in matarials_list :
-			matarials[matlib_name]=self.material_lib[matlib_name]
-		model= models.Model(mesh,group_name,emit_tex,ao_tex,albedo_tex,smooth_tex,metal_tex,norm_tex,matarials)
-		self.scenes[scn_name].add_item_model(index_list,model)
-		logger.log_debug(47,[scn_name],context=self.name)
+		mesh= list(self.meshes_lib.values())[mesh_index]
+		emit_tex=list(self.textures_lib.values())[emit_tex_index]
+		ao_tex=list(self.textures_lib.values())[ao_tex_index]
+		albedo_tex=list(self.textures_lib.values())[albedo_tex_index]
+		smooth_tex=list(self.textures_lib.values())[smooth_tex_index]
+		metal_tex=list(self.textures_lib.values())[metal_tex_index]
+		norm_tex=list(self.textures_lib.values())[norm_tex_index]
+		for matlib_name in matarials :
+			matlib_index=matarials[matlib_name]
+			matarials[matlib_name]=list(self.materials_lib.values())[matlib_index]
+		model= models.Model(mesh,obj_name,group_name,emit_tex,ao_tex,albedo_tex,smooth_tex,metal_tex,norm_tex,matarials)
+		self.scenes_list[scn_index].add_item_model(item_index,model)
+		logger.log_debug(47,[str(scn_index)],context=self.name)
 	
-	def set_scene_item_model(self,scn_name,index_list,mesh_group=None):
+	
+	def set_scene_item_model(self,scn_index,item_index,mesh_group=None):
 		"""
 		change an item model of the specified scene
 		not given parameters are ignored and will produce no changes
 		mesh_group is for select the sub mesh
 		"""
-		self.scenes[scn_name].set_item_model(index_list,mesh_group)
-		logger.log_debug(48,[scn_name],context=self.name)
+		self.scenes_list[scn_index].set_item_model(item_index,mesh_group)
+		logger.log_debug(48,[str(scn_index)],context=self.name)
 	
-	def del_scene_item_model(self,scn_name,index_list):
+	def del_scene_item_model(self,scn_index,item_index):
 		"""remove an item model of the specified scene"""
-		self.scenes[scn_name].del_item_model(index_list)
-		logger.log_debug(49,[scn_name],context=self.name)
+		self.scenes_list[scn_index].del_item_model(item_index)
+		logger.log_debug(49,[str(scn_index)],context=self.name)
 	
 	
-	def add_scene_item_noise(self,scn_name,index_list,sound_name,volumes=(1,1),pitch=1,loop=False,angles=(0,360),spreading_factor=1):
+	def add_scene_item_noise(self,scn_index,item_index,sound_index,volumes=(1,1),pitch=1,loop=False,angles=(0,360),spreading_factor=1):
 		"""
 		append an item noise of the specified scene
 		volumes is the gain of the sound
@@ -482,12 +569,12 @@ class Interface:
 		rolloff_factor for the sound calculation (see openAL doc)
 		reference_distance for the sound calculation (see openAL doc)
 		"""
-		sound=self.sounds_lib[sound_name]
+		sound= list(self.sounds_lib.values())[sound_index]
 		noise= noises.Noise(sound,volumes,pitch,loop,angles,spreading_factor)
-		self.scenes[scn_name].add_item_noise(index_list,noise)
-		logger.log_debug(51,[scn_name],context=self.name)
+		self.scenes_list[scn_index].add_item_noise(item_index,noise)
+		logger.log_debug(51,[str(scn_index)],context=self.name)
 	
-	def set_scene_item_noise(self,scn_name,index_list,volumes=None,pitch=None,playout=None):
+	def set_scene_item_noise(self,scn_index,item_index,volumes=None,pitch=None,playout=None):
 		"""
 		change a noise for the specified item in the specified scene
 		not given parameters are ignored and will produce no changes
@@ -495,16 +582,16 @@ class Interface:
 		if pitch <1 decrease the sound frequency is lowered, if >1 increase the sound frequency or no change if 1
 		if playout is True the sound will be emitted
 		"""
-		self.scenes[scn_name].set_item_noise(index_list,volumes,pitch,playout)
-		logger.log_debug(52,[scn_name],context=self.name)
+		self.scenes_list[scn_index].set_item_noise(item_index,volumes,pitch,playout)
+		logger.log_debug(52,[str(scn_index)],context=self.name)
 	
-	def del_scene_item_noise(self,scn_name,index_list):
+	def del_scene_item_noise(self,scn_index,item_index):
 		"""remove an item noise of the specified scene"""
-		self.scenes[scn_name].del_item_noise(index_list)
-		logger.log_debug(53,[scn_name],context=self.name)
+		self.scenes_list[scn_index].del_item_noise(item_index)
+		logger.log_debug(53,[str(scn_index)],context=self.name)
 	
 	
-	def add_scene_light(self,scn_name,index_list,ambient=(0.1,0.1,0.1),diffuse=(1,1,1),turn=True,position=(0,0,0),orientation=(1,0,0,0),scale=(1,1,1)):
+	def add_scene_light(self,scn_index,parent_index,ambient=(0.1,0.1,0.1),diffuse=(1,1,1),turn=True,position=(0,0,0),orientation=(1,0,0,0),scale=(1,1,1)):
 		"""
 		append a light item in the specified scene
 		ambient is the added color surrounding objects
@@ -513,26 +600,27 @@ class Interface:
 		position orientation scale are vectors for the light placement
 		"""
 		light= lights.Light(ambient,diffuse,turn,position,orientation,scale)
-		self.scenes[scn_name].add_light(index_list,light)
-		logger.log_debug(55,[scn_name],context=self.name)
+		light_index=self.scenes_list[scn_index].add_light(parent_index,light)
+		logger.log_debug(55,[str(scn_index)],context=self.name)
+		return light_index
 	
-	def set_scene_light(self,scn_name,index_list,ambient=None,diffuse=None):
+	def set_scene_light(self,scn_index,light_index,ambient=None,diffuse=None):
 		"""
 		change light item parameters of the specified scene
 		not given parameters are ignored and will produce no changes
 		ambient is the added color surrounding objects
 		diffuse is the color added to object directly exposed
 		"""
-		self.scenes[scn_name].set_light(index_list,ambient,diffuse)
-		logger.log_debug(56,[scn_name],context=self.name)
+		self.scenes_list[scn_index].set_light(light_index,ambient,diffuse)
+		logger.log_debug(56,[str(scn_index)],context=self.name)
 	
-	def del_scene_light(self,scn_name,index_list):
+	def del_scene_light(self,scn_index,parent_index,light_index):
 		"""remove light item from the specified scene"""
-		self.scenes[scn_name].del_light(index_list)
-		logger.log_debug(57,[scn_name],context=self.name)
+		self.scenes_list[scn_index].del_light(parent_index,light_index)
+		logger.log_debug(57,[str(scn_index)],context=self.name)
 	
 	
-	def add_scene_eye(self,scn_name,index_list,frame_position=(0,0),frame_size=(1,1),size=1,scope=1,focal=1,see=True,position=(0,0,0),orientation=(1,0,0,0),scale=(1,1,1)):
+	def add_scene_eye(self,scn_index,parent_index,frame_position=(0,0),frame_size=(1,1),size=1,scope=1,focal=1,see=True,position=(0,0,0),orientation=(1,0,0,0),scale=(1,1,1)):
 		"""
 		append  an eye item in the specified scene
 		frame_position and frame_size are 2d vectors of the place where to draw in the window
@@ -543,26 +631,27 @@ class Interface:
 		position orientation scale are placement vectors
 		"""
 		eye= eyes.Eye(self.window_size,frame_position,frame_size,size,scope,focal,see,position,orientation,scale)
-		self.scenes[scn_name].add_eye(index_list,eye)
-		logger.log_debug(59,[scn_name],context=self.name)
+		eye_index=self.scenes_list[scn_index].add_eye(parent_index,eye)
+		logger.log_debug(59,[str(scn_index)],context=self.name)
+		return eye_index
 	
-	def set_scene_eye(self,scn_name,index_list,frame_position=None,frame_size=None,focal=None):
+	def set_scene_eye(self,scn_index,eye_index,frame_position=None,frame_size=None,focal=None):
 		"""
 		change eye item parameters of the specified scene
 		not given parameters are ignored and will produce no changes
 		frame_position and frame_size are 2d vectors placing where to draw in the window
 		focal is the angle of view and must be in radian
 		"""
-		self.scenes[scn_name].set_eye(index_list,self.window_size,frame_position,frame_size,focal)
-		logger.log_debug(60,[scn_name],context=self.name)
+		self.scenes_list[scn_index].set_eye(eye_index,self.window_size,frame_position,frame_size,focal)
+		logger.log_debug(60,[str(scn_index)],context=self.name)
 	
-	def del_scene_eye(self,scn_name,eye_name):
+	def del_scene_eye(self,scn_index,parent_index,eye_index):
 		"""remove eye item from the specified scene"""
-		self.scenes[scn_name].del_eye(eye_name)
-		logger.log_debug(61,[scn_name],context=self.name)
+		self.scenes_list[scn_index].del_eye(parent_index,eye_index)
+		logger.log_debug(61,[str(scn_index)],context=self.name)
 	
 	
-	def add_scene_ear(self,scn_name,index_list,volume=1,see=True,position=(0,0,0),orientation=(1,0,0,0),scale=(1,1,1)):
+	def add_scene_ear(self,scn_index,parent_index,volume=1,see=True,position=(0,0,0),orientation=(1,0,0,0),scale=(1,1,1)):
 		"""
 		append  ear item in the specified scene
 		volume must be between 0 and 1
@@ -570,22 +659,23 @@ class Interface:
 		position orientation scale are placement vectors
 		"""
 		ear= ears.Ear(volume,see,position,orientation,scale)
-		self.scenes[scn_name].add_ear(index_list,ear)
-		logger.log_debug(63,[scn_name],context=self.name)
+		ear_index=self.scenes_list[scn_index].add_ear(parent_index,ear)
+		logger.log_debug(63,[str(scn_index)],context=self.name)
+		return ear_index
 	
-	def set_scene_ear(self,scn_name,index_list,volume=None):
+	def set_scene_ear(self,scn_index,ear_index,volume=None):
 		"""
 		change ear item parameters of the specified scene
 		not given parameters are ignored and will produce no changes
 		volume must be between 0 and 1
 		"""
-		self.scenes[scn_name].set_ear(index_list,volume)
-		logger.log_debug(64,[scn_name],context=self.name)
+		self.scenes_list[scn_index].set_ear(ear_index,volume)
+		logger.log_debug(64,[str(scn_index)],context=self.name)
 	
-	def del_scene_ear(self,scn_name,ear_name):
+	def del_scene_ear(self,scn_index,parent_index,ear_index):
 		"""remove a ear item from the specified scene"""
-		self.scenes[scn_name].del_ear(ear_name)
-		logger.log_debug(65,[scn_name],context=self.name)
+		self.scenes_list[scn_index].del_ear(parent_index,ear_index)
+		logger.log_debug(65,[str(scn_index)],context=self.name)
 	
 	
 	def resize(self,window_size):
@@ -594,12 +684,12 @@ class Interface:
 		(window_size must be a tuple containing am horizontal and vertical size)
 		"""
 		self.window_size= array.vector( window_size )
-		for scn_name in list(self.scenes.keys()) :
-			logger.log_debug(67,[scn_name],context=self.name)
-			self.scenes[scn_name].resize(self.window_size)
-		for overlay_name in list(self.overlays.keys()) :
-			logger.log_debug(68,[overlay_name],context=self.name)
-			self.overlays[overlay_name].resize(self.window_size)
+		for scn_index in range(len(self.scenes_list)) :
+			logger.log_debug(67,[str(scn_index)],context=self.name)
+			self.scenes_list[scn_index].resize(self.window_size)
+		for overlay_index in range(len(self.overlays_list)) :
+			logger.log_debug(68,[str(overlay_index)],context=self.name)
+			self.overlays_list[overlay_index].resize(self.window_size)
 	
 	
 	def display(self):
@@ -679,14 +769,14 @@ class Interface:
 		"""request to stop the virtual world"""
 		
 		### remove all scenes
-		for scn_name in list(self.scenes.keys()) :
-			logger.log_info(71,[scn_name],context=self.name)
-			self.del_scene(scn_name)
+		for scn_index in range(len(self.scenes_list)) :
+			logger.log_info(71,[str(scn_index)],context=self.name)
+			self.del_scene(scn_index)
 		
 		### remove all overlays
-		for overlay_name in list(self.overlays.keys()) :
-			logger.log_info(72,[overlay_name],context=self.name)
-			self.del_overlay(overlay_name)
+		for overlay_index in range(len(self.overlays_list)) :
+			logger.log_info(72,[str(overlay_index)],context=self.name)
+			self.del_overlay(overlay_index)
 		
 		### release OpenAL resources
 		### destroys all existing OpenAL Sources and Buffers

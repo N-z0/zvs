@@ -36,7 +36,7 @@ class Icon:
 	def __init__(self,active,position,orientation,scale):
 		"""placement vectors are necessary"""
 		
-		self.children={}
+		self.icons_list=[]
 		
 		### if True the attributed sprite and noise will be render
 		self.active=active
@@ -59,22 +59,13 @@ class Icon:
 		self.rel_mod_mat= None;self.reckon_matrix_relative()
 	
 	
-	def get_child(self,index_list):
-		"""retrieve one specific child"""
-		if len(index_list)>1 :
-			return self.children[index_list[0]].get_child(index_list[1:])
-		elif len(index_list)==1 :
-			return self.children[index_list[0]]
-		else :
-			return self
-	
-	def add_child(self,name,child):
+	def add_child(self,child):
 		"""append one specific child"""
-		self.children[name]=child
+		self.icons_list.append(child)
 	
-	def del_child(self,name):
+	def del_child(self,child):
 		"""remove one specific child"""
-		del self.children[name]
+		self.icons_list.remove(child)
 	
 	
 	def set_activity(self,activity=None):
@@ -127,7 +118,7 @@ class Icon:
 		"""do absolute transformation calculation for itself and all children"""
 		self.reckon_matrix_absolute(mod_mat)
 		self.changed=False
-		for child in self.children.values() :
+		for child in self.icons_list :
 			if child.get_activity() :
 				child.set_transformation_absolute(self.abs_mod_mat)
 	
@@ -139,7 +130,7 @@ class Icon:
 				self.set_transformation_absolute(mod_mat)
 			else:
 				### changed check will continue on all children
-				for child in self.children.values() :
+				for child in self.icons_list :
 					child.render_calculation(self.abs_mod_mat)
 	
 	
@@ -160,7 +151,7 @@ class Icon:
 		if self.active :
 			if self.sprite is not None :
 				self.sprite.render_draw(shader,self.abs_mod_mat)
-			for child in self.children.values() :
+			for child in self.icons_list :
 				child.render_sprite(shader)
 	
 	
@@ -183,7 +174,7 @@ class Icon:
 		if self.active :
 			if self.signal is not None :
 				self.signal.render_audio()
-			for child in self.children.values() :
+			for child in self.icons_list :
 				child.render_signal()
 	
 	
@@ -192,7 +183,7 @@ class Icon:
 		if self.sprite :
 			self.sprite.resize(window_size)
 		
-		for child in self.children.values() :
+		for child in self.icons_list :
 			child.resize(window_size)
 	
 	

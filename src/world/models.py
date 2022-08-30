@@ -38,12 +38,15 @@ from OpenGL import GL as gl
 
 class Model:
 	"""the combination of mesh texture and material for the items"""
-	def __init__(self,mesh,group_name,emit_tex,ao_tex,albedo_tex,smooth_tex,metal_tex,norm_tex,matarials):
+	def __init__(self,mesh,obj_name,group_name,emit_tex,ao_tex,albedo_tex,smooth_tex,metal_tex,norm_tex,matarials):
 		"""if group_name is not provided it will be the first group found"""
 		
 		self.mesh=mesh
+		
+		### if no obj_name then find the first object name
+		self.obj_name= obj_name or tuple(self.mesh.get_objects_names())[0]
 		### if no group_name then find the first group name
-		self.group_name= group_name or tuple(self.mesh.get_groups_names())[0]
+		self.group_name= group_name or tuple(self.mesh.get_groups_names(self.obj_name))[0]
 		
 		self.matarials=matarials
 		
@@ -71,10 +74,10 @@ class Model:
 		self.normal_texture.select()
 		
 		### for the group_name get each materials library
-		for mat_lib_name in self.mesh.get_matlib_names(self.group_name) :
+		for mat_lib_name in self.mesh.get_matlibs_names(self.obj_name,self.group_name) :
 			#print('model mat_lib_name:',mat_lib_name)
 			### for each materials library get each materials
-			for material_name in self.mesh.get_material_names(self.group_name,mat_lib_name) :
+			for material_name in self.mesh.get_materials_names(self.obj_name,self.group_name,mat_lib_name) :
 				#print('model material_name:',material_name)
 				### get the material object and give the the shader the attributes
 				m=self.matarials[mat_lib_name].get(material_name)
@@ -83,7 +86,7 @@ class Model:
 				gl.glUniform1fv(gl.glGetUniformLocation(shader.index,"material.shine"), 1, m.shine)
 				gl.glUniform1fv(gl.glGetUniformLocation(shader.index,"material.ao"), 1, m.ao)
 				### ask to draw the specified designated mesh
-				self.mesh.draw(group_name=self.group_name,mat_lib_name=mat_lib_name,material_name=material_name)
+				self.mesh.draw(object_name=self.obj_name,group_name=self.group_name,mat_lib_name=mat_lib_name,material_name=material_name)
 	
 	
 	def set_group(self,group_name=None):

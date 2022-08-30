@@ -36,7 +36,7 @@ class Item:
 	def __init__(self,active,position,orientation,scale):
 		"""placement vectors are necessary"""
 		
-		self.children={}
+		self.items_list=[]
 		
 		### if True the attributed 3D shape and noise will be render
 		self.active=active
@@ -60,22 +60,13 @@ class Item:
 		self.rel_mod_mat= None;self.reckon_matrix_relative()
 	
 	
-	def get_child(self,index_list):
-		"""retrieve one specific child"""
-		if len(index_list)>1 :
-			return self.children[index_list[0]].get_child(index_list[1:])
-		elif len(index_list)==1 :
-			return self.children[index_list[0]]
-		else :
-			return self
-	
-	def add_child(self,name,child):
+	def add_child(self,child):
 		"""append one specific child"""
-		self.children[name]=child
+		self.items_list.append(child)
 	
-	def del_child(self,name):
+	def del_child(self,child):
 		"""remove one specific child"""
-		del self.children[name]
+		self.items_list.remove(child)
 	
 	
 	def set_activity(self,activity=None):
@@ -129,7 +120,7 @@ class Item:
 		"""do absolute transformation calculation for itself and all children"""
 		self.reckon_matrix_absolute(mod_mat,view_mat)
 		self.changed=False
-		for child in self.children.values() :
+		for child in self.items_list :
 			if child.get_activity() :
 				child.set_transformation_absolute(self.abs_mod_mat,self.view_mat)
 	
@@ -141,7 +132,7 @@ class Item:
 				self.set_transformation_absolute(mod_mat,view_mat)
 			else:
 				### changed check will continue on all children
-				for child in self.children.values() :
+				for child in self.items_list :
 					child.render_calculation(self.abs_mod_mat,self.view_mat)
 	
 	
@@ -162,7 +153,7 @@ class Item:
 		if self.active :
 			if self.model is not None :
 				self.model.render_draw(shader,self.abs_mod_mat)
-			for child in self.children.values() :
+			for child in self.items_list :
 				child.render_draw(shader)
 	
 	
@@ -185,6 +176,6 @@ class Item:
 		if self.active :
 			if self.noise is not None :
 				self.noise.render_audio(self.abs_mod_mat)
-			for child in self.children.values() :
+			for child in self.items_list :
 				child.render_sound()
 
