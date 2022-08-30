@@ -56,12 +56,14 @@ class Overlay(icons.Icon) :
 			self.blend_factor= numpy.array( (blend_factor,), dtype=numpy.float32 )
 	
 	
-	def display(self,window_size,log_context):
-		"""render all icons of the overlay"""
-		
-		### update absolute matrix of moved items
+	def reckon(self,log_context):
+		"""update absolute matrix of all moved icons"""
 		logger.log_debug(79,context=log_context)
-		self.render_calculation(self.abs_mod_mat)
+		self.reckon_absolute_transformation(self.abs_mod_mat)
+	
+	
+	def render(self,window_size,log_context):
+		"""display all icons of the overlay"""
 		
 		logger.log_debug(80,context=log_context)
 		self.render_icons_sound()

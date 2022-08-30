@@ -63,12 +63,14 @@ class Scene(items.Item) :
 		self.blend_factor=None;self.set_blend_factor(blend_factor)
 	
 	
-	def display(self,window_size,log_context):
-		"""display all children items"""
-		
-		### update absolute matrix of moved items
+	def reckon(self,log_context):
+		"""update absolute matrix of all moved items"""
 		logger.log_debug(75,context=log_context)
-		self.render_calculation(self.abs_mod_mat,self.view_mat)
+		self.reckon_absolute_transformation(self.abs_mod_mat,self.view_mat)
+	
+	
+	def render(self,window_size,log_context):
+		"""display all children items"""
 		
 		logger.log_debug(76,context=log_context)
 		self.render_items_sound()

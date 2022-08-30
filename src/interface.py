@@ -691,15 +691,23 @@ class Interface:
 			logger.log_debug(68,[str(overlay_index)],context=self.name)
 			self.overlays_list[overlay_index].resize(self.window_size)
 	
+	def reckon(self):
+		"""calculation of previously selected scene and overlay"""
+		if self.current_scene is not None :
+			logger.log_debug(69,context=self.name)
+			self.current_scene.reckon(log_context=self.name)
+		if self.current_overlay is not None :
+			logger.log_debug(70,context=self.name)
+			self.current_overlay.reckon(log_context=self.name)
 	
 	def display(self):
 		"""render previously selected scene and overlay"""
 		if self.current_scene is not None :
 			logger.log_debug(69,context=self.name)
-			self.current_scene.display(self.window_size,log_context=self.name)
+			self.current_scene.render(self.window_size,log_context=self.name)
 		if self.current_overlay is not None :
 			logger.log_debug(70,context=self.name)
-			self.current_overlay.display(self.window_size,log_context=self.name)
+			self.current_overlay.render(self.window_size,log_context=self.name)
 		
 	
 	def get_info_opengl(self,extensions=None):

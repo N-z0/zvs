@@ -53,11 +53,11 @@ class Item:
 		
 		### i know its ugly
 		### but i want see all class atributs in init
-		self.position=None;self.tra_mat=None;self.reckon_position(position)
-		self.orientation=None;self.rot_mat=None;self.reckon_orientation(orientation)
-		self.scale=None;self.sca_mat=None;self.reckon_dimension(scale)
+		self.position=None;self.tra_mat=None;self.reckon_relative_position(position)
+		self.orientation=None;self.rot_mat=None;self.reckon_relative_orientation(orientation)
+		self.scale=None;self.sca_mat=None;self.reckon_relative_dimension(scale)
 		### is necessary for calculating the inner relative transformations
-		self.rel_mod_mat= None;self.reckon_matrix_relative()
+		self.rel_mod_mat= None;self.reckon_relative_matrix()
 	
 	
 	def add_child(self,child):
@@ -79,61 +79,69 @@ class Item:
 		return self.active
 	
 	
-	def reckon_position(self,new_position=None):
+	def reckon_relative_position(self,position=None,cumulative=False):
 		"""calculation of the translation"""
-		if new_position is not None :
-			self.position= array.vector( new_position )
+		if position is not None :
+			if cumulative is True :
+				rot_mat= array.matrix_from_quaternion( array.normalise_quaternion(self.orientation) )
+				move_vector = rot_mat.dot( array.vector( position[X],position[Y],position[Z],1 ) )
+				move_vector = array.vector( move_vector[X],move_vector[Y],move_vector[Z] )
+				self.position += move_vector
+			else :
+				self.position= array.vector( position[X],position[Y],position[Z] )
 			self.tra_mat= array.translate_matrix(self.position[X],self.position[Y],self.position[Z])
 	
-	def reckon_orientation(self,new_orientation=None):
+	def reckon_relative_orientation(self,orientation=None,cumulative=False):
 		"""calculation of the rotation"""
-		if new_orientation is not None :
-			self.orientation= array.quaternion(new_orientation[0],new_orientation[1],new_orientation[2],new_orientation[3])
+		if orientation is not None :
+			quaternion= array.quaternion(orientation[0],orientation[1],orientation[2],orientation[3])
+			if cumulative is True :
+				self.orientation= array.multiply_quaternions(quaternion,self.orientation)
+			else :
+				self.orientation= quaternion
 			self.rot_mat= array.matrix_from_quaternion(self.orientation)
 	
-	def reckon_dimension(self,new_scale=None):
+	def reckon_relative_dimension(self,scale=None,cumulative=False):
 		"""calculation of the scale"""
-		if new_scale is not None :
-			self.scale= array.vector( new_scale )
+		if scale is not None :
+			scale_vector=array.vector( scale[X],scale[Y],scale[Z] )
+			if cumulative is True :
+				self.scale *= scale_vector
+			else :
+				self.scale= scale_vector
 			self.sca_mat= array.scale_matrix(self.scale[X],self.scale[Y],self.scale[Z])
 	
-	def reckon_matrix_relative(self):
+	def reckon_relative_matrix(self):
 		"""calculation of relative matrix transformation"""
 		self.rel_mod_mat= self.tra_mat @ self.rot_mat @ self.sca_mat
 	
-	def set_transformation_relative(self,position=None,orientation=None,scale=None):
+	def reckon_relative_transformation(self,position=None,orientation=None,scale=None,cumulative=False):
 		"""change the optional position orientation scale"""
 		if  position is not None  or  orientation is not None  or  scale is not None :
-			self.reckon_position(position)
-			self.reckon_orientation(orientation)
-			self.reckon_dimension(scale)
-			self.reckon_matrix_relative()
+			self.reckon_relative_position(position,cumulative)
+			self.reckon_relative_orientation(orientation,cumulative)
+			self.reckon_relative_dimension(scale,cumulative)
+			self.reckon_relative_matrix()
 			self.changed=True
 	
 	
-	def reckon_matrix_absolute(self,mod_mat,view_mat):
+	def reckon_absolute_matrix(self,mod_mat,view_mat):
 		"""calculation of absolute matrix transformation"""
 		self.abs_mod_mat= mod_mat @ self.rel_mod_mat
 		self.view_mat= numpy.linalg.inv(self.rot_mat) @ numpy.linalg.inv(self.tra_mat) @ view_mat
 	
-	def set_transformation_absolute(self,mod_mat,view_mat):
-		"""do absolute transformation calculation for itself and all children"""
-		self.reckon_matrix_absolute(mod_mat,view_mat)
-		self.changed=False
-		for child in self.items_list :
-			if child.get_activity() :
-				child.set_transformation_absolute(self.abs_mod_mat,self.view_mat)
 	
-	def render_calculation(self,mod_mat,view_mat):
-		"""check if absolute transformation calculation is necessary"""
+	def reckon_absolute_transformation(self,mod_mat,view_mat,spread=False):
+		"""check and if necessary do calculation for itself and all children"""
 		if self.active :
 			### check if re-calculation is necessary
-			if self.changed :
-				self.set_transformation_absolute(mod_mat,view_mat)
-			else:
-				### changed check will continue on all children
-				for child in self.items_list :
-					child.render_calculation(self.abs_mod_mat,self.view_mat)
+			if self.changed or spread :
+				self.reckon_absolute_matrix(mod_mat,view_mat)
+				self.changed=False
+				spread=True
+			### changed check will continue on all children
+			for child in self.items_list :
+				child.reckon_absolute_transformation(self.abs_mod_mat,self.view_mat,spread)
 	
 	
 	def add_model(self,model):
