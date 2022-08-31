@@ -28,7 +28,7 @@ from commonz.ds import array
 
 
 
-class Icon:
+class Basic_Icon:
 	"""
 	are good for placing others Icons
 	sprites and signal can be on it
@@ -36,13 +36,10 @@ class Icon:
 	def __init__(self,active,position,orientation,scale):
 		"""placement vectors are necessary"""
 		
-		self.icons_list=[]
+		self.children_list=[]
 		
 		### if True the attributed sprite and noise will be render
 		self.active=active
-		
-		self.sprite=None
-		self.signal=None
 		
 		### if True it means absolute placement recalculation is needed
 		self.changed=True
@@ -61,17 +58,17 @@ class Icon:
 	
 	def add_child(self,child):
 		"""append one specific child"""
-		self.icons_list.append(child)
+		self.children_list.append(child)
 	
 	def del_child(self,child):
 		"""remove one specific child"""
-		self.icons_list.remove(child)
+		self.children_list.remove(child)
 	
 	
-	def set_activity(self,activity=None):
+	def set_activity(self,active=None):
 		"""change the state"""
-		if activity is not None :
-			self.active=activity
+		if active is not None :
+			self.active=active
 	
 	def get_activity(self):
 		"""return the state"""
@@ -109,7 +106,6 @@ class Icon:
 				self.scale= scale_vector
 			self.sca_mat= array.scale_matrix(self.scale[X],self.scale[Y],1)
 	
-	
 	def reckon_relative_matrix(self):
 		"""calculation of relative matrix transformation"""
 		self.rel_mod_mat= self.tra_mat @ self.rot_mat @ self.sca_mat
@@ -126,10 +122,12 @@ class Icon:
 	
 	def reckon_absolute_matrix(self,mod_mat):
 		"""calculation of absolute matrix transformation"""
-		self.abs_mod_mat= mod_mat @ self.rel_mod_mat
+		if mod_mat is None :
+			self.abs_mod_mat= self.rel_mod_mat
+		else :
+			self.abs_mod_mat= mod_mat @ self.rel_mod_mat
 	
-	
-	def reckon_absolute_transformation(self,mod_mat,spread=False):
+	def reckon_absolute_transformation(self,mod_mat=None,spread=False):
 		"""check and if necessary do calculation for itself and all children"""
 		if self.active :
 			### check if re-calculation is necessary
@@ -138,8 +136,29 @@ class Icon:
 				self.changed=False
 				spread=True
 			### changed check will continue on all children
-			for child in self.icons_list :
+			for child in self.children_list :
 				child.reckon_absolute_transformation(self.abs_mod_mat,spread)
+
+
+
+
+
+
+
+
+
+
+class Icon(Basic_Icon):
+	"""
+	are good for placing others Icons
+	sprites and signal can be on it
+	"""
+	def __init__(self,active,position,orientation,scale):
+		"""placement vectors are necessary"""
+		Basic_Icon.__init__(self,active,position,orientation,scale)
+		
+		self.sprite=None
+		self.signal=None
 	
 	
 	def add_sprite(self,sprite):
@@ -159,8 +178,11 @@ class Icon:
 		if self.active :
 			if self.sprite is not None :
 				self.sprite.render_draw(shader,self.abs_mod_mat)
-			for child in self.icons_list :
-				child.render_sprite(shader)
+	
+	def resize_sprite(self,window_size):
+		"""change the size of the sprites"""
+		if self.sprite is not None :
+			self.sprite.resize(window_size)
 	
 	
 	def add_signal(self,signal):
@@ -182,16 +204,4 @@ class Icon:
 		if self.active :
 			if self.signal is not None :
 				self.signal.render_audio()
-			for child in self.icons_list :
-				child.render_signal()
-	
-	
-	def resize(self,window_size):
-		"""change the size of the sprites and ask children to do the same"""
-		if self.sprite :
-			self.sprite.resize(window_size)
-		
-		for child in self.icons_list :
-			child.resize(window_size)
-	
-	
+

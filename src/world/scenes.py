@@ -43,19 +43,75 @@ from . import items
 
 
 
-class Scene(items.Item) :
+class Basic_Scene() :
+	"""Scene are the root item of any 3d worlds"""
+	def __init__(self):
+		"""position orientation scale are normally not necessary"""
+		
+		self.items_list= []
+	
+	
+	def _add_element(self,elements_list,element):
+		""" """
+		if None in elements_list :
+			element_index= elements_list.index(None)
+			elements_list[element_index]=element
+		else :
+			element_index= len(elements_list)
+			elements_list.append(element)
+		return element_index
+	
+	
+	def reckon(self,log_context):
+		"""update absolute matrix of all moved items"""
+		logger.log_debug(75,context=log_context)
+		for item in self.items_list :
+			item.reckon_absolute_transformation()
+	
+	
+	def add_item(self,parent_index,item):
+		"""append a child"""
+		if parent_index is not None :
+			parent=self.items_list[parent_index]
+			parent.add_child(item)
+		item_index= self._add_element(self.items_list,item)
+		return item_index
+	
+	def set_item(self,item_index,activity,position,orientation,scale,cumulative):
+		"""change parameters of one child"""
+		item= self.items_list[item_index]
+		item.set_activity(activity)
+		item.reckon_relative_transformation(position,orientation,scale,cumulative)
+	
+	def del_item(self,parent_index,item_index):
+		"""remove a child"""
+		item= self.items_list[item_index]
+		if parent_index is not None :
+			parent= self.items_list[parent_index]
+			parent.del_child(item)
+		self.items_list[item_index]=None
+
+
+
+
+
+
+
+
+
+
+class Scene(Basic_Scene) :
 	"""Scene are the root item of any 3d worlds"""
 	def __init__(self,shader,background_color,fog_color,blend_factor,position,orientation,scale):
 		"""position orientation scale are normally not necessary"""
-		items.Item.__init__(self,True,position,orientation,scale)
-		self.changed=False
-		
-		self.shader=shader
+		Basic_Scene.__init__(self)
 		
 		self.eyes_list= []
 		self.lights_list= []
 		self.ears_list= []
 		
+		self.shader=shader
+	
 		### i know its ugly
 		### but i want see all class attributes in init
 		self.fog_color=None;self.set_fog_color(fog_color)
@@ -63,10 +119,33 @@ class Scene(items.Item) :
 		self.blend_factor=None;self.set_blend_factor(blend_factor)
 	
 	
+	def set_background_color(self,background_color=None):
+		"""change the color of where nothing is draw"""
+		if background_color is not None :
+			self.background_color= background_color
+	
+	def set_fog_color(self,fog_color=None):
+		"""change the fog color and opacity"""
+		if fog_color is not None :
+			self.fog= numpy.array( fog_color, dtype=numpy.float32 )
+	
+	def set_blend_factor(self,blend_factor=None):
+		"""change the blending factor between material and textures of objects"""
+		if blend_factor is not None :
+			self.blend_factor= numpy.array( (blend_factor,), dtype=numpy.float32 )
+	
+	
 	def reckon(self,log_context):
 		"""update absolute matrix of all moved items"""
 		logger.log_debug(75,context=log_context)
-		self.reckon_absolute_transformation(self.abs_mod_mat,self.view_mat)
+		for element in self.items_list+self.eyes_list+self.lights_list+self.ears_list :
+			element.reckon_absolute_transformation()
+	
+	
+	def resize(self,window_size):
+		"""change the frame size for the eyes"""
+		for eye in self.eyes_list :
+			eye.resize(window_size)
 	
 	
 	def render(self,window_size,log_context):
@@ -77,6 +156,7 @@ class Scene(items.Item) :
 		
 		logger.log_debug(77,context=log_context)
 		self.render_items_draw(window_size)
+	
 	
 	def render_items_draw(self,window_size):
 		"""draw all 3d graphic of the items"""
@@ -197,13 +277,15 @@ class Scene(items.Item) :
 							gl.glUniform3fv(location, 1, atribs[a])
 							
 				### draw the scene objects
-				self.render_draw(self.shader)
+				for item in self.items_list :
+					item.render_draw(self.shader)
 		
 		### unselect shader
 		gl.glUseProgram(0)
 		
 		### finish the draw
 		#gl.glFlush()
+	
 	
 	def render_items_sound(self):
 		"""play all 3d sound of the items"""
@@ -231,163 +313,9 @@ class Scene(items.Item) :
 				listener.set_velocity(velocity_vector)
 		
 		### play scene objects sounds
-		self.render_sound()
+		for item in self.items_list :
+			item.render_sound()
 	
-	
-	def set_background_color(self,background_color=None):
-		"""change the color of where nothing is draw"""
-		if background_color is not None :
-			self.background_color= background_color
-	
-	def set_fog_color(self,fog_color=None):
-		"""change the fog color and opacity"""
-		if fog_color is not None :
-			self.fog= numpy.array( fog_color, dtype=numpy.float32 )
-	
-	def set_blend_factor(self,blend_factor=None):
-		"""change the blending factor between material and textures of objects"""
-		if blend_factor is not None :
-			self.blend_factor= numpy.array( (blend_factor,), dtype=numpy.float32 )
-		
-	
-	def add_light(self,parent_index,light):
-		"""append a light item"""
-		if parent_index is None :
-			parent=self
-		else :
-			parent=self.items_list[parent_index]
-		parent.add_child(light)
-		
-		if None in self.lights_list :
-			light_index= self.lights_list.index(None)
-			self.lights_list[light_index]=light
-		else :
-			light_index= len(self.lights_list)
-			self.lights_list.append(light)
-		
-		return light_index
-	
-	def set_light(self,light_index,ambient_color,diffuse_color):
-		"""change light item parameters"""
-		light= self.lights_list[light_index]
-		light.set_color_ambient(ambient_color)
-		light.set_color_diffuse(diffuse_color)
-	
-	def del_light(self,parent_index,light_index):
-		"""remove a specified light item"""
-		if parent_index is None :
-			parent=self
-		else :
-			parent=self.items_list[parent_index]
-		parent.del_child(light_index)
-		
-		self.lights_list[light_index]=None
-	
-	
-	def add_eye(self,parent_index,eye):
-		"""append an eye item"""
-		if parent_index is None :
-			parent=self
-		else :
-			parent=self.items_list[parent_index]
-		parent.add_child(eye)
-		
-		if None in self.eyes_list :
-			eye_index= self.eyes_list.index(None)
-			self.eyes_list[eye_index]=eye
-		else :
-			eye_index= len(self.eyes_list)
-			self.eyes_list.append(eye)
-		
-		return eye_index
-	
-	def set_eye(self,eye_index,window_size,frame_position,frame_size,focal):
-		"""change eye item parameters"""
-		eye= self.eyes_list[eye_index]
-		eye.set_frame_position(frame_position)
-		eye.set_projection(window_size,frame_size,focal)
-	
-	def del_eye(self,parent_index,eye_index):
-		"""remove a specified eye item"""
-		if parent_index is None :
-			parent=self
-		else :
-			parent=self.items_list[parent_index]
-		parent.del_child(eye_index)
-		
-		self.eyes_list[eye_index]=None
-	
-	
-	def resize(self,window_size):
-		"""change the frame size for the eyes"""
-		for eye in self.eyes_list :
-			eye.resize(window_size)
-	
-	
-	def add_ear(self,parent_index,ear):
-		"""append an ear item"""
-		if parent_index is None :
-			parent=self
-		else :
-			parent=self.items_list[parent_index]
-		parent.add_child(ear)
-		
-		if None in self.ears_list :
-			ear_index= self.ears_list.index(None)
-			self.ears_list[ear_index]=ear
-		else :
-			ear_index= len(self.ears_list)
-			self.ears_list.append(ear)
-		
-		return ear_index
-	
-	
-	def set_ear(self,ear_index,volume):
-		"""change ear item parameters"""
-		ear= self.ears_list[ear_index]
-		ear.set_volume(volume)
-	
-	def del_ear(self,parent_index,ear_index):
-		"""remove a specified ear item"""
-		if parent_index is None :
-			parent=self
-		else :
-			parent=self.items_list[parent_index]
-		parent.del_child(ear_index)
-		
-		self.ears_list[ear_index]=None
-	
-	
-	def add_item(self,parent_index,item):
-		"""append a child"""
-		if parent_index is None :
-			parent=self
-		else :
-			parent=self.items_list[parent_index]
-		parent.add_child(item)
-		
-		if None in self.items_list :
-			item_index= self.items_list.index(None)
-			self.items_list[item_index]=item
-		else :
-			item_index= len(self.items_list)
-			self.items_list.append(item)
-		
-		return item_index
-	
-	
-	def set_item(self,item_index,activity,position,orientation,scale,cumulative):
-		"""change parameters of one child"""
-		item= self.items_list[item_index]
-		item.set_activity(activity)
-		item.reckon_relative_transformation(position,orientation,scale,cumulative)
-	
-	def del_item(self,parent_index,item_index):
-		"""remove a child"""
-		parent= self.items_list[parent_index]
-		parent.del_child(item_index)
-		
-		self.items_list[item_index]=None
 	
 	def add_item_model(self,item_index,model):
 		"""assign 3d graphic to one item"""
@@ -419,5 +347,74 @@ class Scene(items.Item) :
 		"""remove 3d sound from a specified item"""
 		item= self.items_list[item_index]
 		item.del_noise()
+	
+	
+	def add_light(self,parent_index,light):
+		"""append a light item"""
+		if parent_index is not None :
+			parent=self.items_list[parent_index]
+			parent.add_child(light)
+		light_index= self._add_element(self.lights_list,light)
+		return light_index
+	
+	def set_light(self,light_index,ambient_color,diffuse_color):
+		"""change light item parameters"""
+		light= self.lights_list[light_index]
+		light.set_color_ambient(ambient_color)
+		light.set_color_diffuse(diffuse_color)
+	
+	def del_light(self,parent_index,light_index):
+		"""remove a specified light item"""
+		light= self.lights_list[light_index]
+		if parent_index is not None :
+			parent= self.items_list[parent_index]
+			parent.del_child(light)
+		self.lights_list[light_index]=None
+		
+		
+	def add_eye(self,parent_index,eye):
+		"""append an eye item"""
+		if parent_index is not None :
+			parent=self.items_list[parent_index]
+			parent.add_child(eye)
+		eye_index= self._add_element(self.eyes_list,eye)
+		return eye_index
+	
+	def set_eye(self,eye_index,window_size,frame_position,frame_size,focal):
+		"""change eye item parameters"""
+		eye= self.eyes_list[eye_index]
+		eye.set_frame_position(frame_position)
+		eye.set_projection(window_size,frame_size,focal)
+	
+	def del_eye(self,parent_index,eye_index):
+		"""remove a specified eye item"""
+		eye= self.eyes_list[eye_index]
+		if parent_index is not None :
+			parent=self.items_list[parent_index]
+			parent.del_child(eye)
+		self.eyes_list[eye_index]=None
+	
+	
+	def add_ear(self,parent_index,ear):
+		"""append an ear item"""
+		if parent_index is not None :
+			parent=self.items_list[parent_index]
+			parent.add_child(ear)
+		ear_index= self._add_element(self.ears_list,ear)
+		return ear_index
+	
+	def set_ear(self,ear_index,volume):
+		"""change ear item parameters"""
+		ear= self.ears_list[ear_index]
+		ear.set_volume(volume)
+	
+	def del_ear(self,parent_index,ear_index):
+		"""remove a specified ear item"""
+		ear= self.ears_list[ear_index]
+		if parent_index is not None :
+			parent=self.items_list[parent_index]
+			parent.del_child(ear)
+		self.ears_list[ear_index]=None
+	
 	
 	

@@ -28,7 +28,7 @@ from commonz.ds import array
 
 
 
-class Item:
+class Basic_Item:
 	"""
 	items are good for placing others Items,
 	and 3D shape and noise can be attributed on it
@@ -36,20 +36,17 @@ class Item:
 	def __init__(self,active,position,orientation,scale):
 		"""placement vectors are necessary"""
 		
-		self.items_list=[]
+		self.children_list=[]
 		
 		### if True the attributed 3D shape and noise will be render
 		self.active=active
-		
-		self.model=None
-		self.noise=None
 		
 		### if True it means absolute placement recalculation is needed
 		self.changed=True
 		
 		### its necessary for calculating the absolute transformations in the world
 		self.abs_mod_mat= array.identity_matrix()
-		self.view_mat= array.identity_matrix()
+		self.view_mat= None
 		
 		### i know its ugly
 		### but i want see all class atributs in init
@@ -62,17 +59,17 @@ class Item:
 	
 	def add_child(self,child):
 		"""append one specific child"""
-		self.items_list.append(child)
+		self.children_list.append(child)
 	
 	def del_child(self,child):
 		"""remove one specific child"""
-		self.items_list.remove(child)
+		self.children_list.remove(child)
 	
 	
-	def set_activity(self,activity=None):
+	def set_activity(self,active=None):
 		"""change the state"""
-		if activity is not None :
-			self.active=activity
+		if active is not None :
+			self.active=active
 	
 	def get_activity(self):
 		"""return the state"""
@@ -127,11 +124,12 @@ class Item:
 	
 	def reckon_absolute_matrix(self,mod_mat,view_mat):
 		"""calculation of absolute matrix transformation"""
-		self.abs_mod_mat= mod_mat @ self.rel_mod_mat
-		self.view_mat= numpy.linalg.inv(self.rot_mat) @ numpy.linalg.inv(self.tra_mat) @ view_mat
+		if mod_mat is None :
+			self.abs_mod_mat= self.rel_mod_mat
+		else :
+			self.abs_mod_mat= mod_mat @ self.rel_mod_mat
 	
-	
-	def reckon_absolute_transformation(self,mod_mat,view_mat,spread=False):
+	def reckon_absolute_transformation(self,mod_mat=None,view_mat=None,spread=False):
 		"""check and if necessary do calculation for itself and all children"""
 		if self.active :
 			### check if re-calculation is necessary
@@ -140,8 +138,43 @@ class Item:
 				self.changed=False
 				spread=True
 			### changed check will continue on all children
-			for child in self.items_list :
+			for child in self.children_list :
 				child.reckon_absolute_transformation(self.abs_mod_mat,self.view_mat,spread)
+
+
+
+
+
+
+
+
+
+
+
+class Item(Basic_Item):
+	"""
+	items are good for placing others Items,
+	and 3D shape and noise can be attributed on it
+	"""
+	def __init__(self,active,position,orientation,scale):
+		"""placement vectors are necessary"""
+		Basic_Item.__init__(self,active,position,orientation,scale)
+		self.view_mat= array.identity_matrix()
+		
+		self.model=None
+		self.noise=None
+	
+	
+	def reckon_absolute_matrix(self,mod_mat,view_mat):
+		"""calculation of absolute matrix transformation"""
+		### call the parent method in first
+		parent= super()
+		parent.reckon_absolute_matrix(mod_mat,view_mat)
+		
+		if view_mat is None :
+			self.view_mat= numpy.linalg.inv(self.rot_mat) @ numpy.linalg.inv(self.tra_mat)
+		else :
+			self.view_mat= numpy.linalg.inv(self.rot_mat) @ numpy.linalg.inv(self.tra_mat) @ view_mat
 	
 	
 	def add_model(self,model):
@@ -161,8 +194,6 @@ class Item:
 		if self.active :
 			if self.model is not None :
 				self.model.render_draw(shader,self.abs_mod_mat)
-			for child in self.items_list :
-				child.render_draw(shader)
 	
 	
 	def add_noise(self,noise):
@@ -184,6 +215,4 @@ class Item:
 		if self.active :
 			if self.noise is not None :
 				self.noise.render_audio(self.abs_mod_mat)
-			for child in self.items_list :
-				child.render_sound()
 

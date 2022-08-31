@@ -40,13 +40,72 @@ from . import icons
 
 
 
-class Overlay(icons.Icon) :
+class Basic_Overlay :
+	"""Overlay are the root of all icons"""
+	def __init__(self,blend_factor,position,orientation,scale):
+		"""position orientation scale are normally not necessary"""
+		
+		self.icons_list=[]
+	
+	
+	def _add_element(self,elements_list,element):
+		""" """
+		if None in elements_list :
+			element_index= elements_list.index(None)
+			elements_list[element_index]=element
+		else :
+			element_index= len(elements_list)
+			elements_list.append(element)
+		return element_index
+	
+	
+	def reckon(self,log_context):
+		"""update absolute matrix of all moved icons"""
+		logger.log_debug(79,context=log_context)
+		for icon in self.icons_list :
+			icon.reckon_absolute_transformation()
+	
+	
+	def add_icon(self,parent_index,icon):
+		"""append an icon child"""
+		if parent_index is not None :
+			parent=self.icons_list[parent_index]
+			parent.add_child(icon)
+		icon_index= self._add_element(self.icons_list,icon)
+		return icon_index
+	
+	def set_icon(self,icon_index,activity,position,orientation,scale):
+		"""change the parameters of one icon child"""
+		icon= self.icons_list[icon_index]
+		icon.set_activity(activity)
+		icon.reckon_relative_transformation(position,orientation,scale)
+	
+	def del_icon(self,parent_index,icon_index):
+		"""remove an icon child"""
+		icon= self.icons_list[icon_index]
+		if parent_index is not None :
+			parent= self.icons_list[parent_index]
+			parent.del_child(icon)
+		self.icons_list[icon_index]=None
+
+
+
+
+
+
+
+
+
+
+
+class Overlay(Basic_Overlay) :
 	"""Overlay are the root of all icons"""
 	def __init__(self,shader,blend_factor,position,orientation,scale):
 		"""position orientation scale are normally not necessary"""
-		icons.Icon.__init__(self,True,position,orientation,scale)
+		Basic_Overlay.__init__(self,blend_factor,position,orientation,scale)
 		
 		self.shader=shader
+		
 		self.blend_factor=None;self.set_blend_factor(blend_factor)
 	
 	
@@ -56,20 +115,20 @@ class Overlay(icons.Icon) :
 			self.blend_factor= numpy.array( (blend_factor,), dtype=numpy.float32 )
 	
 	
-	def reckon(self,log_context):
-		"""update absolute matrix of all moved icons"""
-		logger.log_debug(79,context=log_context)
-		self.reckon_absolute_transformation(self.abs_mod_mat)
+	def resize(self,window_size):
+		"""ask children to change the size of the sprites"""
+		for icon in self.icons_list :
+			icon.resize_sprite(window_size)
 	
 	
 	def render(self,window_size,log_context):
 		"""display all icons of the overlay"""
-		
 		logger.log_debug(80,context=log_context)
 		self.render_icons_sound()
 		
 		logger.log_debug(81,context=log_context)
 		self.render_icons_draw(window_size)
+	
 	
 	def render_icons_draw(self,window_size):
 		"""draw all icons of the overlay"""
@@ -151,7 +210,8 @@ class Overlay(icons.Icon) :
 		gl.glUniformMatrix4fv(loc, 1, True, projection )
 		
 		### display our overlay icons
-		self.render_sprite(self.shader)
+		for icon in self.icons_list :
+			icon.render_sprite(self.shader)
 		
 		### unselect shader
 		gl.glUseProgram(0)
@@ -161,40 +221,8 @@ class Overlay(icons.Icon) :
 	
 	def render_icons_sound(self):
 		"""play sound of icons"""
-		### start by playing the overlay sounds
-		self.render_signal()
-	
-	
-	def add_icon(self,parent_index,icon):
-		"""append an icon child"""
-		if parent_index is None :
-			parent=self
-		else :
-			parent=self.icons_list[parent_index]
-		parent.add_child(icon)
-		
-		if None in self.icons_list :
-			icon_index= self.icons_list.index(None)
-			self.icons_list[icon_index]=icon
-		else :
-			icon_index= len(self.icons_list)
-			self.icons_list.append(icon)
-		
-		return icon_index
-	
-	
-	def set_icon(self,icon_index,activity,position,orientation,scale):
-		"""change the parameters of one icon child"""
-		icon= self.icons_list[icon_index]
-		icon.set_activity(activity)
-		icon.set_relative_transformation(position,orientation,scale)
-	
-	def del_icon(self,parent_index,icon_index):
-		"""remove an icon child"""
-		parent= self.icons_list[parent_index]
-		parent.del_child(icon_index)
-		
-		self.icons_list[icon_index]=None
+		for icon in self.icons_list :
+			icon.render_signal()
 	
 	
 	def add_icon_sprite(self,icon_index,sprite):
@@ -227,5 +255,4 @@ class Overlay(icons.Icon) :
 		"""remove an audio sound from specified icon"""
 		icon= self.icons_list[icon_index]
 		icon.del_signal()
-	
-	
+
