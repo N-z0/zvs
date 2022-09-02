@@ -74,6 +74,10 @@ MSG_FILE="data/msgs.txt"
 VERTEX_SHADERS_FOLDER="data/shaders/vertex"
 FRAGMENT_SHADERS_FOLDER="data/shaders/fragment"
 SHADERS_REPERTORY_FILE="data/shaders/repertory.tsv"
+COMBO_SHADER_NAME="#name"
+COMBO_SHADER_COMMENT="#comment"
+FRAGMENT_SHADER_NAME="#fragment_shader"
+VERTEX_SHADER_NAME="#vertex_shader"
 GLSL_EXT="glsl"
 
 GL_AUX_BUFFERS= "AUX_BUFFERS"
@@ -281,6 +285,7 @@ class Interface(Basic_Interface):
 		self.shaders_repertory_file= pkg_resources.resource_filename(self.name,SHADERS_REPERTORY_FILE)
 		self.vertex_shaders_folder= pkg_resources.resource_filename(self.name,VERTEX_SHADERS_FOLDER)
 		self.fragment_shaders_folder= pkg_resources.resource_filename(self.name,FRAGMENT_SHADERS_FOLDER)
+		self.shaders_dico=None
 		self.vert_shaders_lib={}
 		self.frag_shaders_lib={}
 		self.combo_shaders_lib={}
@@ -289,53 +294,63 @@ class Interface(Basic_Interface):
 		self.window_size=array.vector( window_size )
 	
 	
-	def load_shaders(self):
-		"""from .tsv repertory file load shaders"""
-		table=tsv.get_dico(self.shaders_repertory_file)
-		for row in table :
-			combo_shader_name=row['#name']
-			vertex_shader=row['#vertex_shader']
-			fragment_shader=row['#fragment_shader']
-			logger.log_info(1,[combo_shader_name],context=self.name)
-			self.load_shader_vertex(vertex_shader)
-			self.load_shader_fragment(fragment_shader)
-			self.load_shader_combo(combo_shader_name,vertex_shader,fragment_shader)
+	def get_shaders_repertory(self):
+		"""from .tsv repertory file retrieve shaders index"""
+		row_list=tsv.get_dico(self.shaders_repertory_file)
+		self.shaders_dico={}
+		for dico_row in row_list :
+			combo_shader_name= dico_row[COMBO_SHADER_NAME]
+			vertex_shader_name= dico_row[VERTEX_SHADER_NAME]
+			fragment_shader_name= dico_row[FRAGMENT_SHADER_NAME]
+			self.shaders_dico[combo_shader_name]=(vertex_shader_name,fragment_shader_name)
+		return row_list
 	
-	def load_shader_vertex(self,name):
-		"""from a glsl file load a vertex shader"""
-		if not name in self.vert_shaders_lib :
-			fullname=pathnames.join_base_name_ext(name,[GLSL_EXT])
+	def load_shader(self,combo_shader_name):
+		"""load the designated shader"""
+		### get shaders info from the repertory file if not yet done
+		if self.shaders_dico is None :
+			self.get_shaders_repertory()
+		### load the requested shader
+		combo_shader_dico= self.shaders_dico[combo_shader_name]
+		vertex_shader_name= combo_shader_dico[0]
+		fragment_shader_name= combo_shader_dico[1]
+		self.load_shader_fragment(fragment_shader_name)
+		self.load_shader_vertex(vertex_shader_name)
+		self.load_shader_combo(combo_shader_name,vertex_shader_name,fragment_shader_name)
+	
+	def load_shader_vertex(self,vertex_shader_name):
+		"""from a glsl file load a vertex shader and return the index of it"""
+		if not vertex_shader_name in self.vert_shaders_lib :
+			fullname=pathnames.join_base_name_ext(vertex_shader_name,[GLSL_EXT])
 			shader_file=pathnames.join_pathname(self.vertex_shaders_folder,fullname)
 			vs = shaders.Vertex_Shader(shader_file)
 			log=vs.check()
 			if log :
-				logger.log_error(2,[name,log],context=self.name)
-			else:
-				self.vert_shaders_lib[name]=vs
+				logger.log_error(2,[vertex_shader_name,log],context=self.name)
+			self.vert_shaders_lib[vertex_shader_name]=vs
 	
-	def load_shader_fragment(self,name):
-		"""from a glsl file load a fragment shader"""
-		if not name in self.frag_shaders_lib :
-			fullname=pathnames.join_base_name_ext(name,[GLSL_EXT])
+	def load_shader_fragment(self,fragment_shader_name):
+		"""from a glsl file load a fragment shader and return the index of it"""
+		if not fragment_shader_name in self.frag_shaders_lib :
+			fullname=pathnames.join_base_name_ext(fragment_shader_name,[GLSL_EXT])
 			shader_file=pathnames.join_pathname(self.fragment_shaders_folder,fullname)
 			fs= shaders.Fragment_Shader(shader_file)
 			log=fs.check()
 			if log :
-				logger.log_error(3,[name,log],context=self.name)
-			else:
-				self.frag_shaders_lib[name]=fs
-	
-	def load_shader_combo(self,name,vertex_shader_name,fragment_shader_name):
-		"""compile a shader from a vertex and a fragment shader"""
-		if not name in self.combo_shaders_lib :
-			vert_shader= self.vert_shaders_lib[vertex_shader_name]
-			frag_shader= self.frag_shaders_lib[fragment_shader_name]
-			cs= shaders.Compiled_Shader(vert_shader,frag_shader)
+				logger.log_error(3,[fragment_shader_name,log],context=self.name)
+			self.frag_shaders_lib[fragment_shader_name]=fs
+			
+	def load_shader_combo(self,combo_shader_name,vertex_shader_name,fragment_shader_name):
+		"""compile a shader from a vertex and a fragment shader and return the index of it"""
+		if not combo_shader_name in self.combo_shaders_lib :
+			logger.log_info(1,[combo_shader_name],context=self.name)
+			vs= self.vert_shaders_lib[vertex_shader_name]
+			fs= self.frag_shaders_lib[fragment_shader_name]
+			cs= shaders.Compiled_Shader(vs,fs)
 			log= cs.check()
 			if log :
 				logger.log_error(4,[log],context=self.name)
-			else:
-				self.combo_shaders_lib[name]=cs
+			self.combo_shaders_lib[combo_shader_name]=cs
 	
 	
 	def _load_resource(self,pathname,resource,resources_lib,log_msg_index):
