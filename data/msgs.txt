@@ -1,7 +1,20 @@
+
+
+
+
+
+
+
+
+
 loading shader: {}
 loading vertex shader failed: {}, {}
 loading fragment shader failed: {}, {}
 shader combo failed: {}
+
+
+
+
 
 
 loading audio resource: {}
@@ -15,6 +28,23 @@ loading metallic texture resource: {}
 loading normal texture resource: {}
 loading mesh resource: {}
 loading materials resource: {}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 added overlay: {}
@@ -33,6 +63,38 @@ deleted sprite icon in overlay: {}
 added signal icon in overlay: {}
 modified signal icon in overlay: {}
 deleted signal icon in overlay: {}
+
+resize overlay: {}
+
+display overlay
+
+clear overlay: {}
+
+icons calculation
+rendering icons sound
+rendering icons draw
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 added scene: {}
@@ -65,17 +127,11 @@ modified ear in scene: {}
 deleted ear in scene: {}
 
 resize scene: {}
-resize overlay: {}
-display scene
-display overlay
-clear scene: {}
-clear overlay: {}
 
+display scene
+
+clear scene: {}
 
 items calculation
 rendering items sound
 rendering items draw
-
-icons calculation
-rendering icons sound
-rendering icons draw
