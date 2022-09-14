@@ -89,7 +89,35 @@ class Basic_Overlay :
 		self.icons_list[icon_index]=None
 
 
-
+	def get_icon_activity(self,icon_index):
+		"""return the state of the specified icon"""
+		icon= self.icons_list[icon_index]
+		return icon.get_activity()
+	
+	def get_icon_relative_position(self,icon_index):
+		"""return the relative position of the specified icon"""
+		icon= self.icons_list[icon_index]
+		return icon.get_relative_position()
+	
+	def get_icon_relative_orientation(self,icon_index):
+		"""return the relative angle of the specified icon"""
+		icon= self.icons_list[icon_index]
+		return icon.get_relative_orientation()
+	
+	def get_icon_relative_scale(self,icon_index):
+		"""return the relative scale of the specified icon"""
+		icon= self.icons_list[icon_index]
+		return icon.get_relative_scale()
+	
+	def get_icon_absolute_position(self,icon_index):
+		"""return the absolute position of the specified icon"""
+		icon= self.icons_list[icon_index]
+		return icon.get_absolute_position()
+	
+	def get_icon_absolute_direction(self,icon_index):
+		"""return the absolute orientation of the specified icon"""
+		icon= self.icons_list[icon_index]
+		return icon.get_absolute_direction()
 
 
 

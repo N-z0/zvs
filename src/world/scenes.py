@@ -90,9 +90,37 @@ class Basic_Scene() :
 			parent= self.items_list[parent_index]
 			parent.del_child(item)
 		self.items_list[item_index]=None
-
-
-
+	
+	
+	def get_item_activity(self,item_index):
+		"""return the state of the specified item"""
+		item= self.items_list[item_index]
+		return item.get_activity()
+	
+	def get_item_relative_position(self,item_index):
+		"""return the relative position of the specified item"""
+		item= self.items_list[item_index]
+		return item.get_relative_position()
+	
+	def get_item_relative_orientation(self,item_index):
+		"""return the relative quaternion of the specified item"""
+		item= self.items_list[item_index]
+		return item.get_relative_orientation()
+	
+	def get_item_relative_scale(self,item_index):
+		"""return the relative scale of the specified item"""
+		item= self.items_list[item_index]
+		return item.get_relative_scale()
+	
+	def get_item_absolute_position(self,item_index):
+		"""return the absolute position of the specified item"""
+		item= self.items_list[item_index]
+		return item.get_absolute_position()
+	
+	def get_item_absolute_direction(self,item_index):
+		"""return the absolute orientation of the specified item"""
+		item= self.items_list[item_index]
+		return item.get_absolute_direction()
 
 
 

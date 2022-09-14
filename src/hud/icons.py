@@ -75,6 +75,31 @@ class Basic_Icon:
 		return self.active
 	
 	
+	def get_relative_position(self):
+		"""return the relative position"""
+		return self.position
+	
+	def get_relative_orientation(self):
+		"""return the relative angle"""
+		return self.orientation
+
+	def get_relative_scale(self):
+		"""return the relative scale"""
+		return self.scale
+	
+	
+	def get_absolute_position(self):
+		"""return the absolute position"""
+		origin= array.vector(0,0,0,1)
+		return self.abs_mod_mat.dot( origin )
+		
+	def get_absolute_direction(self):
+		"""return the absolute orientation"""
+		#return array.quaternion_from_matrix(self.abs_mod_mat)
+		origin= array.vector(0,1,0,0)
+		return self.abs_mod_mat.dot( origin )
+	
+	
 	def reckon_relative_position(self,position=None,cumulative=False):
 		"""calculation of the translation"""
 		if position is not None :

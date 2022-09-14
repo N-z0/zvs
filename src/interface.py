@@ -177,6 +177,31 @@ class Basic_Interface:
 		logger.log_debug(27,[str(overlay_index)],context=self.name)
 	
 	
+	def get_overlay_icon_activity(self,overlay_index,icon_index):
+		"""return the state of icon from a specified overlay"""
+		return self.overlays_list[overlay_index].get_overlay_icon_activity(icon_index)
+	
+	def get_overlay_icon_relative_position(self,overlay_index,icon_index):
+		"""return the relative position of icon from a specified overlay"""
+		return self.overlays_list[overlay_index].get_overlay_icon_relative_position(icon_index)
+	
+	def get_overlay_icon_relative_orientation(self,overlay_index,icon_index):
+		"""return the relative angle of icon from a specified overlay"""
+		return self.overlays_list[overlay_index].get_overlay_icon_relative_orientation(icon_index)
+	
+	def get_overlay_icon_relative_scale(self,overlay_index,icon_index):
+		"""return the relative scale of icon from a specified overlay"""
+		return self.overlays_list[overlay_index].get_overlay_icon_relative_scale(icon_index)
+	
+	def get_overlay_icon_absolute_position(self,overlay_index,icon_index):
+		"""return the absolute position of icon from a specified overlay"""
+		return self.overlays_list[overlay_index].get_overlay_icon_absolute_position(icon_index)
+	
+	def get_overlay_icon_absolute_direction(self,overlay_index,icon_index):
+		"""return the absolute orientation of icon from a specified overlay"""
+		return self.overlays_list[overlay_index].get_overlay_icon_absolute_direction(icon_index)
+	
+	
 	def add_scene(self):
 		"""
 		append a new scene
@@ -231,7 +256,32 @@ class Basic_Interface:
 		self.scenes_list[scn_index].del_item(parent_index,item_index)
 		logger.log_debug(45,[str(scn_index)],context=self.name)
 	
-		
+	
+	def get_scene_item_activity(self,scn_index,item_index):
+		"""return the state of item from a specified scene"""
+		return self.scenes_list[scn_index].get_scene_item_activity(item_index)
+	
+	def get_scene_item_relative_position(self,scn_index,item_index):
+		"""return the relative position of item from a specified scene"""
+		return self.scenes_list[scn_index].get_scene_item_relative_position(item_index)
+	
+	def get_scene_item_relative_orientation(self,scn_index,item_index):
+		"""return the relative quaternion of item from a specified scene"""
+		return self.scenes_list[scn_index].get_scene_item_relative_orientation(item_index)
+	
+	def get_scene_item_relative_scale(self,scn_index,item_index):
+		"""return the relative scale of item from a specified scene"""
+		return self.scenes_list[scn_index].get_scene_item_relative_scale(item_index)
+	
+	def get_scene_item_absolute_position(self,scn_index,item_index):
+		"""return the absolute position of item from a specified scene"""
+		return self.scenes_list[scn_index].get_scene_item_absolute_position(item_index)
+	
+	def get_scene_item_absolute_direction(self,scn_index,item_index):
+		"""return the absolute orientation of item from a specified scene"""
+		return self.scenes_list[scn_index].get_scene_item_absolute_direction(item_index)
+	
+	
 	def reckon(self):
 		"""calculation of previously selected scene and overlay"""
 		if self.current_scene is not None :
